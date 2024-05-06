@@ -2,15 +2,30 @@ from enum import Enum
 from functools import wraps
 import json
 import os
-from flask import request, abort, Response
+from flask import jsonify, request, abort, Response
 from jose import jwt
 from urllib.request import urlopen
+from backend.database.models.user import User
 from backend.utils import isNoneOrEmpty
+from flask import request
+
+'''
+    The Auth module exposes flask decorators that are responsible for 
+    authentication and authorization 
+    
+    Basically every call will need an Auth0 token
+    There are 3 types of users:
+    Admins that can see and modify any data belonging to any user
+    Users that can see and modify any data belonging to them 
+    Robots that can only request settings for their operation and post data  
+     Robots use an api key from the user to gain access to the endpoints
+    
+
+'''
 
 class tokenType(Enum):
     bearer = 0
     auth = 1
-
 
 # AuthError Exception
 '''
@@ -25,7 +40,7 @@ class AuthError(Exception):
 
 # Auth Header
 '''
-#TODO [X] implement get_token_auth_header() method
+    #TODO [X] implement get_token_auth_header() method
     [X] it should attempt to get the header from the request
     [X] it should raise an AuthError if no header is present
             10.4.1 400 Bad Request The request could not be understood 
@@ -64,48 +79,7 @@ def get_token_auth_header():
 
 
 '''
-#TODO [X] implement check_permissions(permission, payload) method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-        payload: decoded jwt payload
-
-    [X] it should raise an AuthError if permissions are not included in the payload
-        !!NOTE check your RBAC settings in Auth0
-    [X] it should raise an AuthError if the requested permission string is not 
-        in the payload permissions array
-    [X] return true otherwise
-'''
-def check_permissions(permission, payload):
-    try:
-        for value in payload["permissions"]:
-            if (value.lower() == permission.lower()):
-                return True
-        raise AuthError({
-            'code': 'Forbidden',
-            'description': f'Premissions needed for operations are not supplied.'
-        }, status.HTTP_403_FORBIDDEN)
-        
-    except KeyError as err:
-        raise AuthError({
-            'code': 'invalid_token',
-            'description': f'Authorization token is missing the permissions array.'
-        }, status.HTTP_401_UNAUTHORIZED)
-
-    
-    # Catches the auth error and adds data if in development for debugging. 
-    # In production we don't send details to the user for security issues
-    description = '***********'
-    if (os.environ['FLASK_ENV'] == "development") :
-        description = f'{permission}'
-
-    raise AuthError({
-        'code': 'Unauthorized',
-        'description': f'Unauthorized. The required permissions are missing. [{description}]'
-    }, status.HTTP_401_UNAUTHORIZED)
-    
-
-'''
-#TODO [X] implement get_token_rsa_key(header) method
+    #TODO [X] implement get_token_rsa_key(header) method
     @INPUTS
         header: the request's authorization header (string)
 
@@ -155,7 +129,7 @@ def get_token_rsa_key(header):
 
 
 '''
-#TODO [X] implement verify_decode_jwt(token) method
+    #TODO [X] implement verify_decode_jwt(token) method
     @INPUTS
         token: a json web token (string)
 
@@ -219,6 +193,50 @@ def verify_decode_jwt(token=''):
 
 
 '''
+    #TODO [X] implement check_permissions(permission, payload) method
+    @INPUTS
+        permission: array of string permission (i.e. ['post:drink'])
+        payload: decoded jwt payload
+
+    [X] it should raise an AuthError if permissions are not included in the payload
+        !!NOTE check your RBAC settings in Auth0
+    [X] it should raise an AuthError if the requested permission string is not 
+        in the payload permissions array
+    [X] return true otherwise
+'''
+def check_permissions(permissions = [], payload = [], roles = []):
+    try:
+        if (len(permissions) == 0): 
+            return True;
+            
+        if any(item in payload for item in permissions):
+            # Special case: to hard delete the delete:all permission is needed (admins only)
+            if (request.method == "DELETE") and (request.args.get('hard', False, type=bool)):
+                return ("tankrover_admin" in roles)
+            return True
+        
+        raise AuthError({
+            'code': 'Forbidden',
+            'description': f'Premissions needed for operations are not supplied.'
+        }, 403)
+
+    except KeyError as err:
+        raise AuthError({
+            'code': 'invalid_token',
+            'description': f'Authorization token is missing the permissions array.'
+        }, 401)
+
+
+
+def check_admin_permissions(payload=[]):
+    roles = ['tankrover_admin']
+    return any(item in payload for item in roles)
+        
+
+
+
+
+'''
 #TODO [X] implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
@@ -230,24 +248,146 @@ def verify_decode_jwt(token=''):
     [X] return the decorator which passes the decoded payload to the decorated
        method
 '''
-def requires_auth(permission=''):
-    def requires_auth_decorator(f):
-        @wraps(f)
+
+
+def requires_token(func):
+    ''' Makes sure a valid token has been submitted'''
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("[requires_token] executing")
+        try:
+            token = get_token_auth_header()
+            payload = verify_decode_jwt(token)
+            kwargs['token_payload'] = payload
+
+        except AuthError as err:
+            print(err)  # for console debugging
+            abort(err.status_code)
+
+        except Exception as err:
+            # In case something else unpredicted occurs return 500 Internal Server Error
+            abort(500)
+
+        return func(*args, **kwargs)
+    return wrapper
+    
+
+''' 
+    Makes sure the user submitting the request is authorized to perform the operation
+    if the user is an admin is by default authorized
+        
+    if the user is not an admin it can only perform operation on his/her own
+    data 
+    * Post and patch and delete are the only methods needed 
+    * for user endpoints we will check the id passed in the request url
+    * for the other endpoints (robots and records) the user_id in the payload 
+        will need to be checked
+    The flow is: 
+        get the user based on the token id
+        if method is DELETE 
+            check that 1 the user matches the id argument and change the hard_delete flag to false
+        if Post or patch 
+            if endpoint is user check auth_id matches the token id  
+            if endpoint is robot check user_id matches the user retrieved via the token
+            if endpoint is data check the oener of the robot id passed matches the user retrieved via the token 
+'''
+def requires_ownership(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("[requires_ownership] executing.")
+        try:
+            payload = kwargs.get('token_payload')
+            print(payload)
+           
+            if (check_admin_permissions(payload["tankrover_api/roles"]) != False):
+                #TODO check endpoint and verify data accordingly
+                print(request.blueprint) # this gives the actual endpoint route e.g. users, robots etc
+                payload_user = payload["sub"] # this is the Auth0 userId 
+                user: User = User.query.get(request.view_args['id'])
+            
+                if ((user == None) or (payload_user != user.auth_id)):
+                    raise AuthError({
+                        'code': 'Unauthorized',
+                        'description': f'Unauthorized operation.'
+                    }, 401)
+            
+        except AuthError as err:
+            print(err)  # for console debugging
+            abort(err.status_code)
+            
+        except:
+            abort(500)
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def requires_permissions(permissions = []):
+    ''' Check permissions '''
+    def decorator(func):
+        @wraps(func)
         def wrapper(*args, **kwargs):
+            print("[requires_permissions] executing")
             try:
-                token = get_token_auth_header()
-                payload = verify_decode_jwt(token)
-                check_permissions(permission, payload)
-                
+                payload = kwargs.get('token_payload', None)
+                check_permissions(permissions, payload["permissions"])
+       
             except AuthError as err:
                 print(err)  # for console debugging
                 abort(err.status_code)
 
             except Exception as err:
-                # In case smoething else unpredicted occurs return 500 Internal Server Error 
+                # In case something else unpredicted occurs return 500 Internal Server Error
                 abort(500)
 
-            return f(*args, **kwargs)
+            return func(*args, **kwargs)
 
         return wrapper
-    return requires_auth_decorator
+    return decorator
+
+
+''' 
+    Checks if the user is part of the admin roles.
+'''
+def requires_admin_role(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("[requires_admin] executing")
+        try:
+            payload = kwargs.get('token_payload', None)
+            is_admin = check_admin_permissions(payload["tankrover_api/roles"])
+        except Exception as err:
+            # In case something else unpredicted occurs return 500 Internal Server Error
+            abort(500)
+
+        return func(*args, **kwargs)
+
+    return wrapper
+    
+
+'''
+    clears the token from the args
+    it's the last function executed 
+'''
+def clear_token(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        print("[clear_token] executing")
+        kwargs.pop('token_payload', None)
+        return func(*args, **kwargs)
+    return wrapper
+
+
+'''
+    Combines all the decorators into one function
+'''
+def requires_auth(*decorators):  
+    def composed_decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            composition = clear_token(func) ## adds the clear token function first to be executed last
+            for decorator in reversed(decorators): ## adds the decorators in reverse order   
+                composition = decorator(composition)
+            composition = requires_token(composition) ## adds the token to the kwargs to be used in the inner decorators     
+            return composition(*args, **kwargs)
+        return wrapper
+    return composed_decorator

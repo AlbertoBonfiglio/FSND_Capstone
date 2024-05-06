@@ -1,11 +1,13 @@
-### Schema
+# Schema
 
-- User with json preferences
+## User with json preferences
+  
   - Name
   - AuthId
   - Robots
   
-- Robot with json preferences
+## Robot 
+  with json preferences
   - owner
   - 
   - mac address
@@ -16,7 +18,9 @@
   - onboard sensors
   - data collection frequency
 
-- Data this is unstructured data so ccould be just stored as json
+## Data
+
+this is unstructured data so ccould be just stored as json
   - datetime
   - robot
   - data array
