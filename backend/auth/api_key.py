@@ -37,7 +37,7 @@ def requires_api_key(func):
             robot = Robot.query \
               .filter(Robot.mac == mac) \
               .filter(Robot.user_id == user.id) \
-              .first_or_404('MAC address not found')  
+              .first_or_404('MAC address not found for API key')  
                  
         except AuthError as err:
             print(err)  # for console debugging

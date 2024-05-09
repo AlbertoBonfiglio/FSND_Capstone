@@ -186,7 +186,7 @@ def check_permissions(permissions = [], payload = [], roles = []):
             any(item in payload for item in permissions):
             return True
         
-        raise AuthError(403, 'Forbidden',f'Premissions needed for operations are not supplied.')
+        raise AuthError(403, 'Forbidden', 'Permissions needed for operations are not supplied.')
 
     except KeyError as err:
         raise AuthError(401, 'invalid_token', 'Authorization token is missing the permissions array.')
@@ -275,11 +275,8 @@ def requires_ownership(func):
                 match request.blueprint.lower():
                     case "users": # used for GET, PATCH, DELETE  
                         user: User = User.query.get(request.view_args['id'])
-                        if ((user == None) or (user.auth_id.lower() == g.userAuthId)):
-                            raise AuthError({
-                                'code': 'Unauthorized',
-                                'description': f'Unauthorized operation.'
-                            }, 401)
+                        if ((user == None) or (user.auth_id.lower() != g.userAuthId)):
+                            raise AuthError(401, 'Unauthorized', 'Unauthorized operation.')
                         g.isOwner = True 
                         
                     case "robots":  # used for POST GET, PATCH, DELETE

@@ -10,11 +10,6 @@ class Reading(db.Model):  # type: ignore
     ''' Reading Class '''
     __tablename__ = 'readings'
 
-  
-    #type_annotation_map = {
-    #    datetime.datetime: TIMESTAMP(timezone=True)
-    #}
-
     id: Mapped[UUID] = mapped_column(
         UUID, primary_key=True, server_default=text("gen_random_uuid()"))
     robot_id: Mapped[UUID] = mapped_column(ForeignKey("robots.id"))

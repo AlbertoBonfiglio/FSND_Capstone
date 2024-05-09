@@ -1,0 +1,3145 @@
+{
+	"info": {
+		"_postman_id": "1c8fd0ca-3ca9-4e88-8048-ea5b8bcfe397",
+		"name": "Udacity Tankrover",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1429750"
+	},
+	"item": [
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Admin token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Save authId\", function () {\r",
+									"    var json = JSON.parse(responseBody);\r",
+									"    pm.collectionVariables.set(\"auth-token-admin\", 'Bearer ' + json.access_token);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "tank_admin@bonfisoft.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "Pa$$w0rd",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "read:sample",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "iQAVMWxA8pqv0LRikpzGbLg04WIKHg6u",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "1qJoRZvJftg3zH691V4rJTY1WIDXqt6w7idq6I8nGGvLgg4O-oNgUi32UMNiBbQ_",
+									"type": "text"
+								},
+								{
+									"key": "audience",
+									"value": "tankrover_api",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://darthbert-udacity.au.auth0.com/oauth/token",
+							"protocol": "https",
+							"host": [
+								"darthbert-udacity",
+								"au",
+								"auth0",
+								"com"
+							],
+							"path": [
+								"oauth",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true\r",
+									"    pm.expect(jsonData.data).to.be.an('array').and.to.be.empty\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users No Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return error information\", function () {\r",
+									"    pm.expect(jsonData.error).to.be.eq(\"missing_header\");\r",
+									"    pm.expect(jsonData.description).to.be.eq(\"Authorization header cannot be empty.\")\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the inserted user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+									"\r",
+									"    pm.collectionVariables.set(\"admin-insertedUser-1\", jsonData.data.id);\r",
+									"    pm.collectionVariables.set(\"admin-insertedUser-1.api_key\", jsonData.data.api_key);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"auth_id\": \"auth0|xxxy\",\r\n    \"email\": \"danners@bonfi.com\",\r\n    \"name\": \"Bellissima befana\",\r\n    \"preferences\": {\r\n        \"complaining\": true,\r\n        \"dancing\": \"lots\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the inserted user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+									"\r",
+									"    pm.collectionVariables.set(\"admin-insertedUser-2\", jsonData.data.id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"auth_id\": \"auth0|xxxyy\",\r\n    \"email\": \"alberts@bonfi.com\",\r\n    \"name\": \"Beardo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the inserted user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+									"\r",
+									"    pm.collectionVariables.set(\"admin-insertedUser-3\", jsonData.data.id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"auth_id\": \"auth0|xxxyyy\",\r\n    \"email\": \"pippo@bonfi.com\",\r\n    \"name\": \"Baudo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User 3 (duplicate)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.false;\r",
+									"    pm.expect(jsonData.error).to.be.a('string');\r",
+									"    pm.expect(jsonData.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"auth_id\": \"auth0|xxxyyy\",\r\n    \"email\": \"pippo@bonfi.com\",\r\n    \"name\": \"Baudo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post User 4 (missing data)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 422\", function () {\r",
+									"    pm.response.to.have.status(422);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.false;\r",
+									"    pm.expect(jsonData.error).to.be.a('string');\r",
+									"    pm.expect(jsonData.message).to.be.a('string');\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Robot 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-1\", jsonData.data.id);\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-1.mac\", jsonData.data.mac);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"user_id\": \"{{admin-insertedUser-1}}\",\r\n    \"mac\": \"9C-B6-D0-3E-9A-BA\",\r\n    \"name\": \"Robot 1\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Robot 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-2\", jsonData.data.id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"user_id\": \"{{admin-insertedUser-1}}\",\r\n    \"mac\": \"9C-B6-D0-3E-9A-BB\",\r\n    \"name\": \"Robot 2\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Robot 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-3\", jsonData.data.id);\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-3.mac\", jsonData.data.mac);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{   \"user_id\": \"{{admin-insertedUser-2}}\",\r\n    \"mac\": \"9C-B6-D0-3E-9A-BC\",\r\n    \"name\": \"Robot 1\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Robot 1 Wrong User Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.message).to.be.eq(\"Data Consistency Error\")\r",
+									"    pm.expect(jsonData.success).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"mac\": \"9C-B6-D0-3E-9A-BB\",\r\n        \"name\": \"Robot 1\",\r\n        \"preferences\": {\r\n            \"complaining\": false,\r\n            \"dancing\": \"2 left feet\"\r\n        },\r\n        \"status\": \"active\",\r\n        \"user_id\": \"c82a7441-2618-4738-9388-7db47dff9f1c\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Robot 1 duplicate MAC",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", function () {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the error message\", function () {\r",
+									"    pm.expect(jsonData.message).to.be.eq(\"Data Consistency Error\")\r",
+									"    pm.expect(jsonData.success).to.be.false;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"mac\": \"9C-B6-D0-3E-9A-BA\",\r\n        \"name\": \"Robot 1\",\r\n        \"preferences\": {\r\n            \"complaining\": false,\r\n            \"dancing\": \"2 left feet\"\r\n        },\r\n        \"status\": \"active\",\r\n        \"user_id\": \"{{admin-insertedUser-1}}\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should not be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('array');\r",
+									"    pm.expect(jsonData.data).not.to.be.empty;\r",
+									"    pm.expect(jsonData.data).to.have.length(3);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User 1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the correct user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-1\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-1}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User 1 Expanded",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the correct user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-1\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-1}}?expanded=true",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-1}}"
+							],
+							"query": [
+								{
+									"key": "expanded",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should return the correct user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-2\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-2}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch User 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-2\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"auth_id\": \"auth0|xxxyy\",\r\n    \"email\": \"alberts@bonfi.com\",\r\n    \"name\": \"Beardo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": [\"2 left feet\", \"limpada\"]\r\n    },\r\n    \"status\": \"active\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-2}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-2}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch User 2 ChangeApiKey",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct user\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-2\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"    pm.collectionVariables.set(\"admin-insertedUser-1.api_key\", jsonData.data.api_key);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-2}}/changeApiKey",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-2}}",
+								"changeApiKey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User 1 (soft)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct user id\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('string');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-1\")\r",
+									"    pm.expect(jsonData.data).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-1}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users (active only)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('array')\r",
+									"        .and.not.to.be.empty\r",
+									"        .and.to.have.length(2);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users (all)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should not be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('array')\r",
+									"    pm.expect(jsonData.data).not.to.be.empty\r",
+									"    pm.expect(jsonData.data).to.have.length(3);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users?activeOnly=False",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "activeOnly",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User 3 (hard)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct user id\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('string');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedUser-3\")\r",
+									"    pm.expect(jsonData.data).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-3}}?hard=true",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users",
+								"{{admin-insertedUser-3}}"
+							],
+							"query": [
+								{
+									"key": "hard",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all Users (all)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should not be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('array')\r",
+									"    pm.expect(jsonData.data).not.to.be.empty\r",
+									"    pm.expect(jsonData.data).to.have.length(2);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/users?activeOnly=False",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "activeOnly",
+									"value": "False"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Robot 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should not be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object')\r",
+									"   \r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots/{{admin-insertedRobot-1}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots",
+								"{{admin-insertedRobot-1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Robot 1 Readings",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"Should not be empty\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('array')\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots/{{admin-insertedRobot-1}}/readings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots",
+								"{{admin-insertedRobot-1}}",
+								"readings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Patch Robot 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct robot patched\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('object');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedRobot-1\")\r",
+									"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+									"    pm.collectionVariables.set(\"admin-insertedRobot-1.mac\", jsonData.data.mac);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n        \"mac\": \"9C-B6-D0-3E-9A-BA\",\r\n        \"name\": \"Robot 1\",\r\n        \"description\": \"Small arduino tank rover\",\r\n        \"preferences\": {\r\n            \"complaining\": true,\r\n            \"dancing\": \"2 left feet\"\r\n        },\r\n        \"status\": \"active\",\r\n        \"user_id\": \"{{admin-insertedUser-1}}\"\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots/{{admin-insertedRobot-1}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots",
+								"{{admin-insertedRobot-1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Robot 2  (soft)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Should return the correct robot id\", function () {\r",
+									"    pm.expect(jsonData.success).to.be.true;\r",
+									"    pm.expect(jsonData.data).to.be.an('string');\r",
+									"\r",
+									"    var id = pm.collectionVariables.get(\"admin-insertedRobot-2\")\r",
+									"    pm.expect(jsonData.data).to.be.eq(id);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{auth-token-admin}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://127.0.0.1:5002/robots/{{admin-insertedRobot-2}}",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"robots",
+								"{{admin-insertedRobot-2}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "An admin user should be able to perform any request"
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "User Endpoint",
+					"item": [
+						{
+							"name": "User token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Save authId\", function () {\r",
+											"    var json = JSON.parse(responseBody);\r",
+											"    pm.collectionVariables.set(\"auth-token-admin\", 'Bearer ' + json.access_token);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "grant_type",
+											"value": "password",
+											"type": "text"
+										},
+										{
+											"key": "username",
+											"value": "tank_user@bonfisoft.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "Pa$$w0rd",
+											"type": "text"
+										},
+										{
+											"key": "scope",
+											"value": "read:sample",
+											"type": "text"
+										},
+										{
+											"key": "client_id",
+											"value": "iQAVMWxA8pqv0LRikpzGbLg04WIKHg6u",
+											"type": "text"
+										},
+										{
+											"key": "client_secret",
+											"value": "1qJoRZvJftg3zH691V4rJTY1WIDXqt6w7idq6I8nGGvLgg4O-oNgUi32UMNiBbQ_",
+											"type": "text"
+										},
+										{
+											"key": "audience",
+											"value": "tankrover_api",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "https://darthbert-udacity.au.auth0.com/oauth/token",
+									"protocol": "https",
+									"host": [
+										"darthbert-udacity",
+										"au",
+										"auth0",
+										"com"
+									],
+									"path": [
+										"oauth",
+										"token"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Users Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should be empty\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true\r",
+											"    pm.expect(jsonData.data).to.be.an('array').and.to.be.empty\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User 1 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the inserted user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+											"\r",
+											"    pm.collectionVariables.set(\"admin-insertedUser-1\", jsonData.data.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"auth_id\": \"auth0|xxxy\",\r\n    \"email\": \"danners@bonfi.com\",\r\n    \"name\": \"Bellissima befana\",\r\n    \"preferences\": {\r\n        \"complaining\": true,\r\n        \"dancing\": \"lots\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User 2 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the inserted user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+											"\r",
+											"    pm.collectionVariables.set(\"admin-insertedUser-2\", jsonData.data.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"auth_id\": \"auth0|xxxyy\",\r\n    \"email\": \"alberts@bonfi.com\",\r\n    \"name\": \"Beardo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User 3 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the inserted user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"    pm.expect(jsonData.data.id).not.to.be.null;\r",
+											"\r",
+											"    pm.collectionVariables.set(\"admin-insertedUser-3\", jsonData.data.id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"auth_id\": \"auth0|xxxyyy\",\r\n    \"email\": \"pippo@bonfi.com\",\r\n    \"name\": \"Baudo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User 3 (duplicate) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 409\", function () {\r",
+											"    pm.response.to.have.status(409);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the error message\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.false;\r",
+											"    pm.expect(jsonData.error).to.be.a('string');\r",
+											"    pm.expect(jsonData.message).to.be.a('string');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{   \"auth_id\": \"auth0|xxxyyy\",\r\n    \"email\": \"pippo@bonfi.com\",\r\n    \"name\": \"Baudo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Post User 4 (missing data) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 422\", function () {\r",
+											"    pm.response.to.have.status(422);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the error message\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.false;\r",
+											"    pm.expect(jsonData.error).to.be.a('string');\r",
+											"    pm.expect(jsonData.message).to.be.a('string');\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{  \r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": \"2 left feet\"\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Users Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should not be empty\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('array');\r",
+											"    pm.expect(jsonData.data).not.to.be.empty;\r",
+											"    pm.expect(jsonData.data).to.have.length(3);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User 1 Copy",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the correct user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"\r",
+											"    var id = pm.collectionVariables.get(\"admin-insertedUser-1\")\r",
+											"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-1}}",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users",
+										"{{admin-insertedUser-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get User 2 Copy",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should return the correct user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"\r",
+											"    var id = pm.collectionVariables.get(\"admin-insertedUser-2\")\r",
+											"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-2}}",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users",
+										"{{admin-insertedUser-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Patch User 2 Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should return the correct user\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('object');\r",
+											"\r",
+											"    var id = pm.collectionVariables.get(\"admin-insertedUser-2\")\r",
+											"    pm.expect(jsonData.data.id).to.be.eq(id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \r\n     \"auth_id\": \"auth0|xxxyy\",\r\n    \"email\": \"alberts@bonfi.com\",\r\n    \"name\": \"Beardo\",\r\n    \"preferences\": {\r\n        \"complaining\": false,\r\n        \"dancing\": [\"2 left feet\", \"limpada\"]\r\n    },\r\n    \"status\": \"active\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-2}}",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users",
+										"{{admin-insertedUser-2}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User 1 (soft) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should return the correct user id\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('string');\r",
+											"\r",
+											"    var id = pm.collectionVariables.get(\"admin-insertedUser-1\")\r",
+											"    pm.expect(jsonData.data).to.be.eq(id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-1}}",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users",
+										"{{admin-insertedUser-1}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Users (active only) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should be empty\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('array')\r",
+											"        .and.not.to.be.empty\r",
+											"        .and.to.have.length(2);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Users (all) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should not be empty\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('array')\r",
+											"    pm.expect(jsonData.data).not.to.be.empty\r",
+											"    pm.expect(jsonData.data).to.have.length(3);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users?activeOnly=False",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "activeOnly",
+											"value": "False"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete User 3 (hard) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"var jsonData = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Should return the correct user id\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('string');\r",
+											"\r",
+											"    var id = pm.collectionVariables.get(\"admin-insertedUser-3\")\r",
+											"    pm.expect(jsonData.data).to.be.eq(id);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users/{{admin-insertedUser-3}}?hard=true",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users",
+										"{{admin-insertedUser-3}}"
+									],
+									"query": [
+										{
+											"key": "hard",
+											"value": "true"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get all Users (all) Copy",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"var jsonData = pm.response.json();\r",
+											"pm.test(\"Should not be empty\", function () {\r",
+											"    pm.expect(jsonData.success).to.be.true;\r",
+											"    pm.expect(jsonData.data).to.be.an('array')\r",
+											"    pm.expect(jsonData.data).not.to.be.empty\r",
+											"    pm.expect(jsonData.data).to.have.length(2);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{auth-token-admin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "http://127.0.0.1:5002/users?activeOnly=False",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5002",
+									"path": [
+										"users"
+									],
+									"query": [
+										{
+											"key": "activeOnly",
+											"value": "False"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "An user can only manage his own resources. Calls to get all should fail and delete can only be soft"
+				},
+				{
+					"name": "Robots Endpoint",
+					"item": [
+						{
+							"name": "New Request",
+							"request": {
+								"method": "OPTIONS",
+								"header": []
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "IOT",
+			"item": [
+				{
+					"name": "Get Robot 1 Settings (API 2 MAC 1)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mac\": \"{{admin-insertedRobot-1.mac}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/iot/getRobotSettings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"iot",
+								"getRobotSettings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Robot 1 Settings ( Api 2 MAC 3)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mac\": \"{{admin-insertedRobot-3.mac}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/iot/getRobotSettings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"iot",
+								"getRobotSettings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Sensor Readings",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mac\": \"{{admin-insertedRobot-1.mac}}\",\r\n    \"data\": [\r\n        {\"sensor1\": 123},\r\n        {\"sensor2\": 0.33}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/iot/postSensorReadings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"iot",
+								"postSensorReadings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Sensor Readings Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mac\": \"{{admin-insertedRobot-3.mac}}\",\r\n    \"data\": [\r\n        {\"sensor1\": 123},\r\n        {\"sensor2\": 0.33}\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5002/iot/postSensorReadings",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5002",
+							"path": [
+								"iot",
+								"postSensorReadings"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "apikey",
+				"apikey": [
+					{
+						"key": "value",
+						"value": "{{admin-insertedUser-1.api_key}}",
+						"type": "string"
+					},
+					{
+						"key": "key",
+						"value": "XApplicationKey",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "auth-token-admin",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedUser",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedUser-1",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedUser-2",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedUser-3",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedRobot-1",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedRobot-2",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedRobot-3",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedUser-1.api_key",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedRobot-1.mac",
+			"value": ""
+		},
+		{
+			"key": "admin-insertedRobot-3.mac",
+			"value": ""
+		}
+	]
+}
