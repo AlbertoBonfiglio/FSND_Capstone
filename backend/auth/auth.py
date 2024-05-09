@@ -2,7 +2,7 @@ from enum import Enum
 from functools import wraps
 import json
 import os
-from flask import request, abort, g
+from flask import Response, request, abort, g
 from jose import jwt
 from urllib.request import urlopen
 from backend.database.models.robot import Robot
@@ -32,10 +32,17 @@ AuthError Exception
 A standardized way to communicate auth failure modes
 '''
 class AuthError(Exception):
-    def __init__(self, error, status_code):
+    def __init__(self, code, error, description):
         self.error = error
-        self.status_code = status_code
+        self.code = code
+        self.description = description
 
+    def serialize(self):
+        return {
+            'code': self.code,
+            'error': self.error,
+            'description': self.description,
+        }
 
 # Auth Header
 '''
@@ -52,10 +59,7 @@ class AuthError(Exception):
 def get_token_auth_header():
     # check if authorization is not in request
     if 'Authorization' not in request.headers:
-        raise AuthError({
-            'code': 'missing_header',
-            'description': 'Authorization header cannot be empty.'
-        }, 401)
+        raise AuthError(401, 'missing_header', 'Authorization header cannot be empty.')
 
     # get the token
     auth_header = request.headers['Authorization']
@@ -63,16 +67,10 @@ def get_token_auth_header():
 
     # check if token is valid
     if len(header_parts) != 2:
-        raise AuthError({
-            'code': 'malformed_token',
-            'description': 'Authorization token is malformed.'
-        }, 400)
+        raise AuthError(400, 'malformed_token','Authorization token is malformed.')
   
     elif header_parts[tokenType.bearer.value].lower() != 'bearer':
-        raise AuthError({
-            'code': 'missing_token',
-            'description': 'Bearer token is malformed or empty.'
-        }, 400)
+        raise AuthError(400, 'missing_token','Bearer token is malformed or empty.')
 
     return header_parts[tokenType.auth.value]
 
@@ -92,10 +90,7 @@ def get_token_auth_header():
 def get_token_rsa_key(header):
     rsaKey = {}
     if 'kid' not in header:
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': 'Authorization header is malformed (missing kid).'
-        }, 400)
+        raise AuthError(400, 'invalid_header', 'Authorization header is malformed (missing kid).')
     try:
         jsonUrl = urlopen(
             f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
@@ -112,17 +107,11 @@ def get_token_rsa_key(header):
                 }
         if rsaKey == {}:
             # if for some reason we can;t get a valid key return 422 Unprocessable
-            raise AuthError({
-                'code': 'invalid_header',
-                'description': 'Unable to retrieve decoding key.'
-            }, 422)
+            raise AuthError(422, 'invalid_header', 'Unable to retrieve decoding key.')
 
     except Exception as err:
         # In case something else wen't sideways return a BAD Request 400
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': f'Authorization malformed. {err}'
-        }, 400)
+        raise AuthError(400, 'invalid_header', f'Authorization malformed. {err}')
 
     return rsaKey
 
@@ -143,10 +132,7 @@ def get_token_rsa_key(header):
 '''
 def verify_decode_jwt(token=''):
     if isNoneOrEmpty(token):
-        raise AuthError({
-            'code': 'invalid_token',
-            'description': 'Token cannot be empty.'
-        }, 400)
+        raise AuthError(400, 'invalid_token', 'Token cannot be empty.')
  
     try:
         # Get the token header data
@@ -170,25 +156,16 @@ def verify_decode_jwt(token=''):
 
     except jwt.ExpiredSignatureError as err:
         print(f'verify_decode_jwt ExpiredSignatureError -- {err}')
-        raise AuthError({
-            'code': 'token_expired',
-            'description': 'Token signature expired.'
-        }, 401)
+        raise AuthError(401 , 'token_expired', 'Token signature expired.')
 
     except jwt.JWTClaimsError:
         print(f'verify_decode_jwt JWTClaimsError: -- {err}')
-        raise AuthError({
-            'code': 'invalid_claims',
-            'description': 'Incorrect claims. Please, check the audience and issuer.'
-        }, 401)
+        raise AuthError(401, 'invalid_claims', 'Incorrect claims. Please, check the audience and issuer.')
 
     except Exception as err:
         print(f'verify_decode_jwt Generic: -- {err}')
         # If it's not a token expiration or  claims issue, we return an  unprocessable (422)  status
-        raise AuthError({
-            'code': 'invalid_header',
-            'description': f'Unable to parse authentication token. {err}'
-        }, 422)
+        raise AuthError(422, 'invalid_header', f'Unable to parse authentication token. {err}')
 
 
 '''
@@ -209,16 +186,10 @@ def check_permissions(permissions = [], payload = [], roles = []):
             any(item in payload for item in permissions):
             return True
         
-        raise AuthError({
-            'code': 'Forbidden',
-            'description': f'Premissions needed for operations are not supplied.'
-        }, 403)
+        raise AuthError(403, 'Forbidden',f'Premissions needed for operations are not supplied.')
 
     except KeyError as err:
-        raise AuthError({
-            'code': 'invalid_token',
-            'description': f'Authorization token is missing the permissions array.'
-        }, 401)
+        raise AuthError(401, 'invalid_token', 'Authorization token is missing the permissions array.')
 
 
 ''' 
@@ -237,18 +208,30 @@ def _requires_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         print("[requires_token] executing")
-        try:
+        try:    
             token = get_token_auth_header()
             payload = verify_decode_jwt(token)
             kwargs['token_payload'] = payload
-
         except AuthError as err:
             print(err)  # for console debugging
-            abort(err.status_code)
+            response = Response(
+                status=err.code, 
+                mimetype="application/json", 
+                response=json.dumps(err.serialize())
+            )
+            abort(response)
 
         except Exception as err:
             # In case something else unpredicted occurs return 500 Internal Server Error
-            abort(500)
+            response = Response(
+               status=500,
+               mimetype="application/json",
+               response= json.dumps({
+                   'code': 500,
+                   'error': 'Internal Server Error'
+               }) 
+            )
+            abort(response)
 
         return func(*args, **kwargs)
     return wrapper
@@ -317,12 +300,24 @@ def requires_ownership(func):
                         raise Exception("Blueprint not found")                    
             
         except AuthError as err:
-            print(err)  # for console debugging
-            abort(err.status_code)
-            
+            response = Response(
+                status=err.code,
+                mimetype="application/json",
+                response=json.dumps(err.serialize())
+            )
+            abort(response)
+                        
         except Exception as err:
             print(err)  # for console debugging
-            abort(500)
+            response = Response(
+                status=500,
+                mimetype="application/json",
+                response=json.dumps({
+                    'code': 500,
+                    'error': 'Internal Server Error'
+                })
+            )
+            abort(response)
         return func(*args, **kwargs)
     return wrapper
 
@@ -340,12 +335,25 @@ def requires_permissions(permissions = []):
        
             except AuthError as err:
                 print(err)  # for console debugging
-                abort(err.status_code)
+                response = Response(
+                    status=err.code,
+                    mimetype="application/json",
+                    response=json.dumps(err.serialize())
+                )
+                abort(response)
 
             except Exception as err:
                 # In case something else unpredicted occurs return 500 Internal Server Error
                 print(err)  # for console debugging
-                abort(500)
+                response = Response(
+                    status=500,
+                    mimetype="application/json",
+                    response=json.dumps({
+                        'code': 500,
+                        'error': 'Internal Server Error'
+                    })
+                )
+                abort(response)
 
             return func(*args, **kwargs)
 
@@ -367,12 +375,25 @@ def requires_roles(roles= []):
 
             except AuthError as err:
                 print(err)  # for console debugging
-                abort(err.status_code)
+                response = Response(
+                    status=err.code,
+                    mimetype="application/json",
+                    response=json.dumps(err.serialize())
+                )
+                abort(response)
 
             except Exception as err:
                 # In case something else unpredicted occurs return 500 Internal Server Error
                 print(err)  # for console debugging
-                abort(500)
+                response = Response(
+                    status=500,
+                    mimetype="application/json",
+                    response=json.dumps({
+                        'code': 500,
+                        'error': 'Internal Server Error'
+                    })
+                )
+                abort(response)
 
             return func(*args, **kwargs)
 
@@ -393,7 +414,15 @@ def requires_admin_role(func):
         except Exception as err:
             # In case something else unpredicted occurs return 500 Internal Server Error
             print(err)  # for console debugging
-            abort(500)
+            response = Response(
+                status=500,
+                mimetype="application/json",
+                response=json.dumps({
+                    'code': 500,
+                    'error': 'Internal Server Error'
+                })
+            )
+            abort(response)
 
         return func(*args, **kwargs)
 

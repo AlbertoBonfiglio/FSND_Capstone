@@ -88,7 +88,7 @@ def create_item():
 )
 def patch_item(id):
     try:
-        instance = Robot.query.get(id)
+        instance = Robot.query.filter(Robot.id == id)
         if (instance == None):
             return not_found(f'Robot # {id} not found.')
       

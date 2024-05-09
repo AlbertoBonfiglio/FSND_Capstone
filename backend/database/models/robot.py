@@ -19,7 +19,7 @@ class Robot(db.Model):  # type: ignore
     name: Mapped[str] =  mapped_column(String(36), nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=True, default="")
     mac: Mapped[str] = mapped_column(String(36), unique=True, nullable=False)
-    preferences: Mapped[JSON] = mapped_column(JSON, nullable=False)
+    preferences: Mapped[JSON] = mapped_column(JSON, nullable=False, default={})
     status: Mapped[str] = mapped_column(
         String(16), nullable=False, index=True, 
         default=Status.active.value)
