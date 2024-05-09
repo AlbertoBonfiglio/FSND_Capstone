@@ -2,9 +2,10 @@ from enum import Enum
 from functools import wraps
 import json
 import os
-from flask import jsonify, request, abort, Response
+from flask import request, abort, g
 from jose import jwt
 from urllib.request import urlopen
+from backend.database.models.robot import Robot
 from backend.database.models.user import User
 from backend.utils import isNoneOrEmpty
 from flask import request
@@ -19,8 +20,6 @@ from flask import request
     Users that can see and modify any data belonging to them 
     Robots that can only request settings for their operation and post data  
      Robots use an api key from the user to gain access to the endpoints
-    
-
 '''
 
 class tokenType(Enum):
@@ -206,13 +205,8 @@ def verify_decode_jwt(token=''):
 '''
 def check_permissions(permissions = [], payload = [], roles = []):
     try:
-        if (len(permissions) == 0): 
-            return True;
-            
-        if any(item in payload for item in permissions):
-            # Special case: to hard delete the delete:all permission is needed (admins only)
-            if (request.method == "DELETE") and (request.args.get('hard', False, type=bool)):
-                return ("tankrover_admin" in roles)
+        if (len(permissions) == 0) or \
+            any(item in payload for item in permissions):
             return True
         
         raise AuthError({
@@ -227,30 +221,18 @@ def check_permissions(permissions = [], payload = [], roles = []):
         }, 401)
 
 
-
+''' 
+    Checks the user role is admin
+'''
 def check_admin_permissions(payload=[]):
     roles = ['tankrover_admin']
     return any(item in payload for item in roles)
-        
-
-
 
 
 '''
-#TODO [X] implement @requires_auth(permission) decorator method
-    @INPUTS
-        permission: string permission (i.e. 'post:drink')
-
-    [X] it should use the get_token_auth_header method to get the token
-    [X] it should use the verify_decode_jwt method to decode the jwt
-    [X] it should use the check_permissions method validate claims and check the
-       requested permission
-    [X] return the decorator which passes the decoded payload to the decorated
-       method
+    decorator used internally to require a token and pass it to the following decorators
 '''
-
-
-def requires_token(func):
+def _requires_token(func):
     ''' Makes sure a valid token has been submitted'''
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -285,7 +267,9 @@ def requires_token(func):
     The flow is: 
         get the user based on the token id
         if method is DELETE 
-            check that 1 the user matches the id argument and change the hard_delete flag to false
+            check that 
+                the user matches the id argument and 
+                change the hard_delete flag to false
         if Post or patch 
             if endpoint is user check auth_id matches the token id  
             if endpoint is robot check user_id matches the user retrieved via the token
@@ -295,27 +279,49 @@ def requires_ownership(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         print("[requires_ownership] executing.")
+        g.userAuthId = None
+        g.isAdmin = False
+        g.isOwner = False
         try:
             payload = kwargs.get('token_payload')
-            print(payload)
-           
-            if (check_admin_permissions(payload["tankrover_api/roles"]) != False):
-                #TODO check endpoint and verify data accordingly
-                print(request.blueprint) # this gives the actual endpoint route e.g. users, robots etc
-                payload_user = payload["sub"] # this is the Auth0 userId 
-                user: User = User.query.get(request.view_args['id'])
+            g.isAdmin = check_admin_permissions(payload["tankrover_api/roles"])
             
-                if ((user == None) or (payload_user != user.auth_id)):
-                    raise AuthError({
-                        'code': 'Unauthorized',
-                        'description': f'Unauthorized operation.'
-                    }, 401)
+            if (g.isAdmin == False):
+                g.userAuthId = payload["sub"] # gets the authId from the token payload
+                
+                match request.blueprint.lower():
+                    case "users": # used for GET, PATCH, DELETE  
+                        user: User = User.query.get(request.view_args['id'])
+                        if ((user == None) or (user.auth_id.lower() == g.userAuthId)):
+                            raise AuthError({
+                                'code': 'Unauthorized',
+                                'description': f'Unauthorized operation.'
+                            }, 401)
+                        g.isOwner = True 
+                        
+                    case "robots":  # used for POST GET, PATCH, DELETE
+                        if request.method.lower() == 'POST':
+                            # does not have an id so look at the request body for owner_id
+                            robot = Robot.query.filter(Robot.user_id == request.get_json().get("user_id"))
+                        else:
+                            robot = Robot.query.get(request.view_args['id'])
+                            
+                        if ((robot == None) or (robot.user.auth_id.lower() == g.userAuthId)):
+                            raise AuthError({
+                                'code': 'Unauthorized',
+                                'description': f'Unauthorized operation.'
+                            }, 401)
+                        g.isOwner = True
+                    
+                    case _:
+                        raise Exception("Blueprint not found")                    
             
         except AuthError as err:
             print(err)  # for console debugging
             abort(err.status_code)
             
-        except:
+        except Exception as err:
+            print(err)  # for console debugging
             abort(500)
         return func(*args, **kwargs)
     return wrapper
@@ -329,7 +335,8 @@ def requires_permissions(permissions = []):
             print("[requires_permissions] executing")
             try:
                 payload = kwargs.get('token_payload', None)
-                check_permissions(permissions, payload["permissions"])
+                check_permissions(
+                    permissions, payload["tankrover_api/user_permissions"])
        
             except AuthError as err:
                 print(err)  # for console debugging
@@ -337,6 +344,34 @@ def requires_permissions(permissions = []):
 
             except Exception as err:
                 # In case something else unpredicted occurs return 500 Internal Server Error
+                print(err)  # for console debugging
+                abort(500)
+
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
+def requires_roles(roles= []):
+    ''' Check permissions '''
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print("[requires_roles] executing")
+            try:
+                payload = kwargs.get('token_payload', None)
+                if any(item in payload["tankrover_api/roles"] for item in roles) == False:
+                       # Special case: to hard delete the delete:all permission is needed (admins only)
+                     raise AuthError("Not Authorized. Missing role.", 400)
+
+            except AuthError as err:
+                print(err)  # for console debugging
+                abort(err.status_code)
+
+            except Exception as err:
+                # In case something else unpredicted occurs return 500 Internal Server Error
+                print(err)  # for console debugging
                 abort(500)
 
             return func(*args, **kwargs)
@@ -357,6 +392,7 @@ def requires_admin_role(func):
             is_admin = check_admin_permissions(payload["tankrover_api/roles"])
         except Exception as err:
             # In case something else unpredicted occurs return 500 Internal Server Error
+            print(err)  # for console debugging
             abort(500)
 
         return func(*args, **kwargs)
@@ -368,7 +404,7 @@ def requires_admin_role(func):
     clears the token from the args
     it's the last function executed 
 '''
-def clear_token(func):
+def _clear_token(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         print("[clear_token] executing")
@@ -378,16 +414,16 @@ def clear_token(func):
 
 
 '''
-    Combines all the decorators into one function
+    Combines all the auth decorators into one function
 '''
 def requires_auth(*decorators):  
     def composed_decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            composition = clear_token(func) ## adds the clear token function first to be executed last
+            composition = _clear_token(func) ## adds the clear token function first to be executed last
             for decorator in reversed(decorators): ## adds the decorators in reverse order   
                 composition = decorator(composition)
-            composition = requires_token(composition) ## adds the token to the kwargs to be used in the inner decorators     
+            composition = _requires_token(composition) ## adds the token to the kwargs to be used in the inner decorators     
             return composition(*args, **kwargs)
         return wrapper
     return composed_decorator

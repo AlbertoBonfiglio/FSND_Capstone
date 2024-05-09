@@ -2,28 +2,31 @@
 
 ## User with json preferences
   
-  - Name
-  - AuthId
-  - Robots
+- Name
+- AuthId
+- Robots
   
-## Robot 
+## Robot
+
   with json preferences
-  - owner
-  - 
-  - mac address
-  - name
-  - model
-  - roam distance
-  - roam frequency
-  - onboard sensors
-  - data collection frequency
+
+- owner
+-
+- mac address
+- name
+- model
+- roam distance
+- roam frequency
+- onboard sensors
+- data collection frequency
 
 ## Data
 
 this is unstructured data so ccould be just stored as json
-  - datetime
-  - robot
-  - data array
+
+- datetime
+- robot
+- data array
 
 ## API
 
@@ -32,5 +35,7 @@ this is unstructured data so ccould be just stored as json
 - Should be secured by an API key for robots and a JWT token for users (maybe use google firebase for auth and app security?)
 
 ### Endpoints
+
 #### Users
+
 #### Robots

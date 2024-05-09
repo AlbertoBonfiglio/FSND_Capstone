@@ -18,17 +18,20 @@ class User(db.Model):  # type: ignore
         String(36), unique=True, nullable=False)
     name: Mapped[str] = mapped_column(String(36), nullable=False)
     email: Mapped[str] = mapped_column(String(48), nullable=False, unique=True)
-    status: Mapped[str] = mapped_column(String(16), nullable=False, index=True, default=Status.active.value)
-    
+    api_key: Mapped[str] = mapped_column(String(36), nullable=False, unique= True, index=True)
     preferences: Mapped[JSON] = mapped_column(JSON, nullable=False)
+    status: Mapped[str] = mapped_column(String(16), nullable=False, index=True, 
+                                        default=Status.active.value)
     
+    # nav links
     robots: Mapped[List['Robot']] = relationship( # type: ignore
         back_populates="user", cascade="all, delete-orphan")
 
-    def __init__(self, auth_id, name, email, status=Status.active, preferences={}):
+    def __init__(self, auth_id, name, email, api_key, status=Status.active, preferences={}):
         self.auth_id = auth_id
         self.name = name
         self.email= email
+        self.api_key = api_key,
         self.status = status.value,
         self.preferences = preferences
         
@@ -54,6 +57,7 @@ class User(db.Model):  # type: ignore
             'auth_id': self.auth_id,
             'name': self.name,
             'email' : self.email,
+            'api_key': self.api_key,
             'status': self.status,
             'preferences': self.preferences,
             'robots': len(self.robots)
@@ -61,14 +65,16 @@ class User(db.Model):  # type: ignore
 
     def format_long(self):
         ''' format '''
+        formattedRobots = [datum.format() for datum in self.robots]
         return {
             'id': self.id,
             'auth_id': self.auth_id,
             'name': self.name,
             'email': self.email,
+            'api_key': self.api_key,
             'status': self.status,
             'preferences': self.preferences,
-            'robots': self.robots
+            'robots': formattedRobots
         }
 
 ''' 
