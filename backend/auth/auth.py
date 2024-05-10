@@ -275,27 +275,30 @@ def requires_ownership(func):
                 match request.blueprint.lower():
                     case "users": # used for GET, PATCH, DELETE  
                         user: User = User.query.get(request.view_args['id'])
-                        if ((user == None) or (user.auth_id.lower() != g.userAuthId)):
-                            raise AuthError(401, 'Unauthorized', 'Unauthorized operation.')
-                        g.isOwner = True 
+                        if (user == None):
+                            raise AuthError(404, 'Not Found', 'Authorization User not found.')
+                        if (user.auth_id.lower() != g.userAuthId.lower()):
+                            raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
                         
                     case "robots":  # used for POST GET, PATCH, DELETE
-                        if request.method.lower() == 'POST':
-                            # does not have an id so look at the request body for owner_id
-                            robot = Robot.query.filter(Robot.user_id == request.get_json().get("user_id"))
-                        else:
+                        if request.method.upper() == 'POST':
+                            # does not have a robot id so look at the request body for owner_id
+                            user: User = User.query.get(request.get_json().get("user_id"))
+                            if (user == None): 
+                                raise AuthError(404, 'Not Found', 'Authorization User not found.')
+                            if (user.auth_id.lower() != g.userAuthId.lower()):
+                                raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
+                
+                        else: # all other methods 
                             robot = Robot.query.get(request.view_args['id'])
-                            
-                        if ((robot == None) or (robot.user.auth_id.lower() == g.userAuthId)):
-                            raise AuthError({
-                                'code': 'Unauthorized',
-                                'description': f'Unauthorized operation.'
-                            }, 401)
-                        g.isOwner = True
-                    
+                            if ((robot == None) or (robot.user.auth_id.lower() != g.userAuthId.lower())):
+                                raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
+                
                     case _:
                         raise Exception("Blueprint not found")                    
-            
+                
+                g.isOwner = True
+
         except AuthError as err:
             response = Response(
                 status=err.code,
