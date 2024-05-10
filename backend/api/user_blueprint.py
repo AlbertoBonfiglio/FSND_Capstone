@@ -84,12 +84,18 @@ def get_one(id):
 @cross_origin()
 @requires_auth(
   requires_permissions(["post:user"]),
+  requires_ownership
   )
 def create_item():
   try:
     body = request.get_json()
+    auth_id = body.get('auth_id', '').strip()
+    # if it's no an admin posting we don' trust the auth_id passed
+    if g.isAdmin == False:
+      auth_id = g.userAuthId
+    
     record: User = User(
-        auth_id = body.get('auth_id', '').strip(),
+        auth_id = auth_id,
         name = body.get('name', '').strip(),
         # TODO [X] generate an api key for the robots to use
         api_key= secrets.token_urlsafe(24),

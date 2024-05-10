@@ -273,13 +273,18 @@ def requires_ownership(func):
                 g.userAuthId = payload["sub"] # gets the authId from the token payload
                 
                 match request.blueprint.lower():
-                    case "users": # used for GET, PATCH, DELETE  
-                        user: User = User.query.get(request.view_args['id'])
-                        if (user == None):
-                            raise AuthError(404, 'Not Found', 'Authorization User not found.')
-                        if (user.auth_id.lower() != g.userAuthId.lower()):
-                            raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
-                        
+                    case "users": # used for POST, GET, PATCH, DELETE  
+                        if request.method.upper() == 'POST':
+                            if ( g.userAuthId.lower() != request.get_json().get("auth_id", "").lower()):
+                                raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
+
+                        else:    
+                            user: User = User.query.get(request.view_args['id'])
+                            if (user == None):
+                                raise AuthError(404, 'Not Found', 'Authorization User not found.')
+                            if (user.auth_id.lower() != g.userAuthId.lower()):
+                                raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
+                            
                     case "robots":  # used for POST GET, PATCH, DELETE
                         if request.method.upper() == 'POST':
                             # does not have a robot id so look at the request body for owner_id
