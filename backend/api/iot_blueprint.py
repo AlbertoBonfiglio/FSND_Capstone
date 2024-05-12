@@ -38,6 +38,8 @@ def post_sensor_readings(robot):
     reading : Reading = Reading(
       robot_id=robot.id,
       data= body.get("data", {}),
+      date=body.get("date", None),
+      
     )
     reading.insert()
 

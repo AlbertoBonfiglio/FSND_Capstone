@@ -90,7 +90,7 @@ def create_item():
   try:
     body = request.get_json()
     auth_id = body.get('auth_id', '').strip()
-    # if it's no an admin posting we don' trust the auth_id passed
+    # if it's not an admin posting we don' trust the auth_id passed
     if g.isAdmin == False:
       auth_id = g.userAuthId
     
@@ -113,11 +113,9 @@ def create_item():
     print(sys.exc_info(), err)
     return unprocessable_error(err)
 
-
   except IntegrityError as err:
     print(sys.exc_info(), err)
     return integrity_error(err)
-
 
   except Exception as err:
     print(sys.exc_info(), err)

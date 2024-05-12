@@ -2,6 +2,7 @@ import sys
 from flask import Blueprint, request, jsonify, g
 from flask_cors import cross_origin
 from sqlalchemy.exc import IntegrityError
+import datetime as dt
 from backend.api.enums import Status
 from backend.auth.auth import requires_auth, requires_ownership, requires_permissions
 from backend.database.connection import db
@@ -13,6 +14,21 @@ from backend.api.error_handlers import integrity_error, internal_error, not_foun
 def is_it_true(value):
   return value.lower() == 'true' or value == True
 
+def is_it_integer(value: str):
+    if value.isdigit() :
+        return int(value)
+    else:
+        raise ValueError(f'{value} is not an integer')
+    
+def is_it_datetime(value: str):
+    try:
+        '1 May 2024 01:02:26 GMT'
+        parsed = dt.datetime.strptime(value, '%d %b %Y %H:%M:%S %Z')
+        return parsed 
+    except Exception as err:
+        print(sys.exc_info(), err)
+        return ValueError(f'Error processing {value}')
+        
 endpoint = 'robots'
 robot_api = Blueprint(f'{endpoint}', __name__)
 
@@ -157,13 +173,39 @@ def get_readings(id: str):
         record: Robot = Robot.query.get(id)
         if (record is None):
             return not_found(f'Robot # {id} not found.')
-        # TODO [ ] Add filters such as date-range
-        readings = Reading.query.filter(Robot.id == id).all() 
-        formattedReadings = [datum.format() for datum in readings]
+        
+        query = Reading.query \
+            .filter(Robot.id == id)\
+            .order_by(Reading.date)
+            
+        # TODO [X] Add date-range
+        start_date = request.args.get('start_date', None, type=is_it_datetime)
+        end_date = request.args.get('end_date', dt.datetime.now(), type=is_it_datetime)
+        
+        if (start_date != None):
+            query = query.filter(Reading.date >= start_date)
+            
+        if (end_date != None):          
+            query = query.filter(Reading.date <= end_date)    
+        
+        # TODO [X] Add pagination
+        page = request.args.get('page', 1, type=is_it_integer)
+        per_page = request.args.get('per_page', 50, type=is_it_integer)
+        readings = query.paginate(page=page, per_page=per_page, max_per_page=None, error_out=False, count=True)
+        if (readings.total > 0 and readings.pages < page):
+            return not_found(f'Exceeded pagination limit: page {page} of {readings.pages} ')
+        
+        formattedReadings = [datum.format_short() for datum in readings]
         
         return jsonify({
             'success': True,
-            'data': formattedReadings
+            'data': formattedReadings,
+            'page': readings.page,
+            'per_page': readings.per_page,
+            'pages': readings.pages,
+            'has_next': readings.has_next,
+            'has_prev': readings.has_prev,
+            'total': readings.total
         })
         
     except Exception as err:

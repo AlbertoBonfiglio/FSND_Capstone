@@ -14,8 +14,7 @@ class Robot(db.Model):  # type: ignore
 
     id: Mapped[UUID] = mapped_column(
         UUID, primary_key=True, server_default=text("gen_random_uuid()"))
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-   
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"), index=True)
     name: Mapped[str] =  mapped_column(String(36), nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=True, default="")
     mac: Mapped[str] = mapped_column(String(36), unique=True, nullable=False)
