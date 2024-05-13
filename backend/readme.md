@@ -1,5 +1,6 @@
+# Tankrover API <!-- omit from toc -->
 
-# Table Of Content <!-- omit from toc -->
+## Table Of Content <!-- omit from toc -->
 
 - [Getting Started](#getting-started)
   - [Installing Dependencies](#installing-dependencies)
@@ -21,11 +22,11 @@
 
 #### Python 3.9
 
-Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+Follow the instructions in [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python) to install the latest version of python for your platform
 
 #### Virtual Environment
 
-Aa virtual environment is recommended whenever using Python for projects. This keeps your dependencies for each project separate and organized. Instructions for setting up a virtual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
+A virtual environment is recommended whenever using Python for projects. This keeps dependencies for each project separate and organized. Instructions for setting up a virtual environment for your platform can be found in the [python docs](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/)
 
 #### PIP Dependencies
 
@@ -43,7 +44,7 @@ pip install -r requirements.txt
 
 - [jose](https://python-jose.readthedocs.io/en/latest/) JavaScript Object Signing and Encryption for JWTs. Useful for encoding, decoding, and verifying JWTS.
 
-- [python-dotenv](https://pypi.org/project/python-dotenv/) a package to help using environment variables
+- [python-dotenv](https://pypi.org/project/python-dotenv/) reads key-value pairs from a .env file and can set them as environment variables.
 
 ## Tasks
 
@@ -51,22 +52,33 @@ pip install -r requirements.txt
 
 1. Create a new Auth0 Account
 2. Select a unique tenant domain
-3. Create a new, single page web application
+3. Create a new, Regular web application, with Client Secret Post as the authentication method. Make a note of the Client secret as it will be needed later. Finally, go to the Advanced settings section for the app and make sure the following grant types are enabled: `Implicit`, `Authorization Code`, `Refresh Token`, `Client Credentials`, and `Password`. This will allow using an api call to retrieve a valid token for testing in Postman.
 4. Create a new API
    - in API Settings:
      - Enable RBAC
      - Do not enable Add Permissions in the Access Token. Permissions and roles are handled by custom actions and added to the token directly
 5. Create new API permissions:
-   - `get:drinks`
-  
+   - `get:users`: gets all users (ADMIN ROLE ONLY)
+   - `get:user`: gets a specific user
+   - `get:robots`: gets a user's robots
+   - `get:readings`: gets a user's robot readings
+   - `patch:user`: Patches a user
+   - `patch:robot`: Patches a user's robot
+   - `post:user`: Posts a user
+   - `post:robot`: Posts a robot for a user
+   - `delete:user`: Deletes a user
+   - `delete:robot`: Deletes a user robot
 6. Create new roles for:
    - Admin
-     - can perform all actions on all users and can hard delete data fromthe database. This role is assigned manually in the Auth0 console.
+     - can perform all actions on all users and can hard delete data from the database. This role is assigned manually in the Auth0 console.
+     - assign all permissions to this user.
    - User
-     - can perform all actions on robots and data he or she owns. Attempting to alter data using another user id results in an 'Unauthorized' error. 
-     - cannot hard delete data. Even if the hard flag is attached to the url query, the API will just soft delete the data by setting the status flag to 'deleted'. 
-7. Test your endpoints with [Postman](https://getpostman.com).
-   - Register 2 users - assign the Admin role to one and User role to the other. 
+     - can perform all actions on robots and data he or she owns. Attempting to alter data using another user id results in an 'Unauthorized' error.
+     - cannot hard delete data. Even if the hard flag is attached to the url query, the API will just soft delete the data by setting the status flag to 'deleted'.
+     - assign all permissions EXCEPT for `get:users` to this user.
+7. Navigate to the Actions tab in the Auth0 console and select Flows and then Login. Add a custom action and copy/paste the code from [action.js](../Auth0/actions.js). This will add a default user role to a user if none is assigned, and the user roles and permissions to the auth token. Don't forget to add `domain`, `clientId`, and `clientSecret` and their respective values to the Action secrets.
+8. Test your endpoints with [Postman](https://getpostman.com).
+   - Register 2 users - assign the Admin role to one and User role to the other.
    - Auth0 needs to be configured with a default directory for the call to oauth/token to retrieve the access token to work
    - Import the postman collection `./backend/Tankrover.postman_collection.json`
    - Right-clicking the collection folder for admin and user, modify the admin token and user token to use the admin and user email and passwords to receive and store the auth token used in the scripts for testing.

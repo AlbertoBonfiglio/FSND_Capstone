@@ -7,22 +7,22 @@ from backend.api.iot_blueprint import iot_api
 from backend.database.connection import setup_db
 from backend.config import load_config, Config
 
-app: Flask
+
 
 def create_app(env=".env"):
     print('Creating Flask App')
-    app = Flask(__name__)
+    _app = Flask(__name__)
     load_config(env);
     
     # set up database
     # setup_db(app, Config)
-    with app.app_context():
-        setup_db(app, Config)
+    with _app.app_context():
+        setup_db(_app, Config)
 
     # Sets up cors. For the time being sets the allowed origins to all
-    CORS(app, resources={r"/api/*": {"origins": os.environ["CORS"]}})
+    CORS(_app, resources={r"/api/*": {"origins": os.environ["CORS"]}})
 
-    @app.after_request
+    @_app.after_request
     def after_request(response):
         response.headers.add('Access-Control-Allow-Headers',
                              'Content-Type, Authorization, true')
@@ -30,20 +30,16 @@ def create_app(env=".env"):
                              'GET, PATCH, POST, DELETE, OPTIONS')
         return response
 
-    app.register_blueprint(user_api)
-    app.register_blueprint(robot_api)
-    app.register_blueprint(iot_api)
+    _app.register_blueprint(user_api)
+    _app.register_blueprint(robot_api)
+    _app.register_blueprint(iot_api)
     
-    @app.route("/")
+    @_app.route("/status", methods=['GET'])
     @cross_origin()
     def get_status():
       return "Healthy"
 
-    return app
+    return _app
 
 
-# app = create_app()
-
-#if __name__ == "__main__":
-   
-#        app.run(debug=Config.debug, port=Config.port)
+app = create_app()
