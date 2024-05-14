@@ -1,8 +1,11 @@
 import os
 import sys
 sys.path.insert(0, __file__.replace(f"app.py", ""))  
-print(sys.path[0])
-from flask import Flask, jsonify
+
+print(f'PATH: {sys.path[0]}')
+print(f'FLASK_APP: {os.getenv("FLASK_APP")}')
+
+from flask import Flask
 from flask_cors import CORS, cross_origin
 from api.user_blueprint import user_api
 from api.robot_blueprint import robot_api
@@ -40,6 +43,7 @@ def create_app(env=".env"):
     def get_status():
       return "Healthy"
 
+    print('Initialization successful. Awaiting requests.')
     return _app
 
 

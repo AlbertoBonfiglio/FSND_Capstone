@@ -1,7 +1,6 @@
 from enum import Enum
 from functools import wraps
 import json
-import os
 from flask import Response, request, abort, g
 from jose import jwt
 from urllib.request import urlopen
@@ -9,7 +8,7 @@ from database.models.robot import Robot
 from database.models.user import User
 from utils import isNoneOrEmpty
 from flask import request
-
+from config import Config
 '''
     The Auth module exposes flask decorators that are responsible for 
     authentication and authorization 
@@ -21,6 +20,8 @@ from flask import request
     Robots that can only request settings for their operation and post data  
      Robots use an api key from the user to gain access to the endpoints
 '''
+
+config = Config;
 
 class tokenType(Enum):
     bearer = 0
@@ -93,7 +94,7 @@ def get_token_rsa_key(header):
         raise AuthError(400, 'invalid_header', 'Authorization header is malformed (missing kid).')
     try:
         jsonUrl = urlopen(
-            f'https://{os.environ["AUTH0_DOMAIN"]}/.well-known/jwks.json')
+            f'https://{config.auth0_domain}/.well-known/jwks.json')
         public_keys = json.loads(jsonUrl.read())
 
         for key in public_keys['keys']:
@@ -147,9 +148,9 @@ def verify_decode_jwt(token=''):
             payload = jwt.decode(
                 token,
                 rsaKey,
-                algorithms=os.environ["AUTH0_ALGORITHMS"],
-                audience=os.environ["AUTH0_AUDIENCE"],
-                issuer=f'https://{os.environ["AUTH0_DOMAIN"]}/',
+                algorithms=config.auth0_algorithms,
+                audience=config.auth0_audience,
+                issuer=f'https://{config.auth0_domain}/',
                 options=options
             )
             return payload
