@@ -23,7 +23,7 @@ def load_config(env=".env"):
         Config.database_uri = os.getenv('DATABASE_URI')
         Config.port = os.getenv('API_PORT', 5001)
         Config.auth0_domain = os.getenv('AUTH0_DOMAIN')
-        Config.auth0_algorithms = os.getenv('AUTH0_ALGORITHMS', ['RS256'])
+        Config.auth0_algorithms = os.getenv('AUTH0_ALGORITHMS', 'RS256').split(',')
         Config.auth0_audience = os.getenv('AUTH0_AUDIENCE')
   
     except Exception as err:
