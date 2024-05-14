@@ -3,10 +3,10 @@ from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
 from sqlalchemy.exc import IntegrityError
 
-from backend.api.error_handlers import integrity_error, internal_error, not_found, unprocessable_error
-from backend.auth.api_key import requires_api_key
-from backend.database.models.reading import Reading
-from backend.database.models.robot import Robot
+from api.error_handlers import integrity_error, internal_error, not_found, unprocessable_error
+from auth.api_key import requires_api_key
+from database.models.reading import Reading
+from database.models.robot import Robot
 
 endpoint = 'iot'
 iot_api = Blueprint(f'{endpoint}', __name__)

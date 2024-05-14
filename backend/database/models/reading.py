@@ -3,7 +3,7 @@ import datetime as dt
 from sqlalchemy import ForeignKey, Index, func, text, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from backend.database.connection import db
+from database.connection import db
 
 
 class Reading(db.Model):  # type: ignore

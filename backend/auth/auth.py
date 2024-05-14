@@ -5,9 +5,9 @@ import os
 from flask import Response, request, abort, g
 from jose import jwt
 from urllib.request import urlopen
-from backend.database.models.robot import Robot
-from backend.database.models.user import User
-from backend.utils import isNoneOrEmpty
+from database.models.robot import Robot
+from database.models.user import User
+from utils import isNoneOrEmpty
 from flask import request
 
 '''

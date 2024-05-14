@@ -1,9 +1,9 @@
 import sys
 from flask import Blueprint, Response, request, jsonify
 from flask_cors import cross_origin
-from backend.database.models.user import User
-from backend.database.models.reading import Reading
-from backend.api.error_handlers import internal_error, not_found
+from database.models.user import User
+from database.models.reading import Reading
+from api.error_handlers import internal_error, not_found
 
 endpoint = 'readings'
 reading_api = Blueprint(f'{endpoint}', __name__)

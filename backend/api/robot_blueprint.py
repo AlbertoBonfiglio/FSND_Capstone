@@ -3,13 +3,12 @@ from flask import Blueprint, request, jsonify, g
 from flask_cors import cross_origin
 from sqlalchemy.exc import IntegrityError
 import datetime as dt
-from backend.api.enums import Status
-from backend.auth.auth import requires_auth, requires_ownership, requires_permissions
-from backend.database.connection import db
-from backend.database.models.reading import Reading
-from backend.database.models.user import User
-from backend.database.models.robot import Robot
-from backend.api.error_handlers import integrity_error, internal_error, not_found, unprocessable_error
+from api.enums import Status
+from auth.auth import requires_auth, requires_ownership, requires_permissions
+from database.connection import db
+from database.models.reading import Reading
+from database.models.robot import Robot
+from api.error_handlers import integrity_error, internal_error, not_found, unprocessable_error
 
 def is_it_true(value):
   return value.lower() == 'true' or value == True

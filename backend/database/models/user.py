@@ -3,8 +3,8 @@ from typing import List
 from sqlalchemy import String, text, event
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from backend.api.enums import Status
-from backend.database.connection import db
+from api.enums import Status
+from database.connection import db
 import re
 
 

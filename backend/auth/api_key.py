@@ -3,9 +3,9 @@ import json
 from typing import Final
 from flask import Response, abort, request
 from werkzeug.exceptions import NotFound
-from backend.auth.auth import AuthError
-from backend.database.models.robot import Robot
-from backend.database.models.user import User
+from auth.auth import AuthError
+from database.models.robot import Robot
+from database.models.user import User
 
 API_KEY_HEADER: Final[str] = 'XApplicationKey'
 
