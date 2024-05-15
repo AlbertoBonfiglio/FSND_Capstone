@@ -15,6 +15,8 @@
   - [Running the server](#running-the-server)
 - [Schema documentation](#schema-documentation)
 - [Api Endpoint documentation](#api-endpoint-documentation)
+- [Deployment to Render](#deployment-to-render)
+  - [Steps](#steps)
 
 ## Getting Started
 
@@ -71,18 +73,20 @@ pip install -r requirements.txt
 6. Create new roles for:
    - Admin
      - can perform all actions on all users and can hard delete data from the database. This role is assigned manually in the Auth0 console.
-     - assign all permissions to this user.
+     - assign all permissions to this role.
    - User
      - can perform all actions on robots and data he or she owns. Attempting to alter data using another user id results in an 'Unauthorized' error.
      - cannot hard delete data. Even if the hard flag is attached to the url query, the API will just soft delete the data by setting the status flag to 'deleted'.
-     - assign all permissions EXCEPT for `get:users` to this user.
-7. Navigate to the Actions tab in the Auth0 console and select Flows and then Login. Add a custom action and copy/paste the code from [action.js](../Auth0/actions.js). This will add a default user role to a user if none is assigned, and the user roles and permissions to the auth token. Don't forget to add `domain`, `clientId`, and `clientSecret` and their respective values to the Action secrets.
+     - assign all permissions EXCEPT for `get:users` to this role.
+7. Navigate to the Actions tab in the Auth0 console and select Flows and then Login. Add a custom action and copy/paste the code from [action.js](../Auth0/actions.js). This will add a default user role to a user if none is assigned. It will also add the user roles and permissions to the authorization token returned when a user signs up. Don't forget to add `domain`, `clientId`, and `clientSecret` and their respective values to the Action secrets.
 8. Test your endpoints with [Postman](https://getpostman.com).
-   - Register 2 users - assign the Admin role to one and User role to the other.
+   - Use the samples ones already configured in postman, or
+   - Register 2 users and assign the Admin role to one and User role to the other.
    - Auth0 needs to be configured with a default directory for the call to oauth/token to retrieve the access token to work
    - Import the postman collection `./backend/Tankrover.postman_collection.json`
    - Right-clicking the collection folder for admin and user, modify the admin token and user token to use the admin and user email and passwords to receive and store the auth token used in the scripts for testing.
    - Run the collection.
+   - Remember to clean up the database if you need to run the entire collection again.
   
 ### Setup the Database
 
@@ -93,26 +97,28 @@ Make note of server address and port, database name, username and password as th
 
 ### Setup the environment
 
-To run the backend several environment variables need to be properly configured:
+To run the backend in development using flask several environment variables need to be properly configured:
+
+1. `CORS`: by deafault is set to `*` which accepts all connection origins. Should be changed to something more restrictive for production,
+2. `DATABASE_URI`: the database uniform resource locator. I.E.: `postgresql://tankrover:$twryedq63fd2fh@localhost:5438/tankrover`,
+3. `TRACK_MODS`: Flask-SQLAlchemy can set up its session to track inserts, updates, and deletes for models, then send a Blinker signal with a list of these changes either before or during calls to session.flush() and session.commit(). It's expensive and better left to `FALSE` 
+4. `AUTH0_DOMAIN`: the Auth0 custom domain for the APP,
+5. `AUTH0_AUDIENCE`: the audience for the Auth0 API,
+6. `AUTH0_ALGORITHMS`: by default `RS256`,
+
+To run the backend in development using flask a few additional environment variables need to be configured:
 
 1. `FLASK_APP`: "${workspaceFolder}/backend/api.py",
 2. `FLASK_ENV`: `development` or `production`,
-3. `CORS`: by deafault is set to `*` which accepts all connection origins. Should be changed to something more restrictive for production,
-4. `APP_DB`: the database name. I.E.: `database.db` for development or production, `database.test.db` for unit tests,
-5. `AUTH0_DOMAIN`: the Auth0 custom domain for the APP,
-6. `AUTH0_CLIENTID`: the Clinet ID for the Auth0 APP,
-7. `AUTH0_AUDIENCE`: the audience for the Auth0 API,
-8. `AUTH0_ALGORITHMS`: "['RS256']",
 
-These variables can either be configured manually from within the `./backend` directory by, for example, running in the terminal:
+These variables can either be configured manually from within the `./backend` directory by, for example, running in the terminal after changing the values appropriately:
 
 ```bash
-export FLASK_APP=backend/api/api.py;
-export FLASK_ENV=development;
+./environment.sh
 ...
 ```
 
-or more conveniently by setting the `.env` and `.env.test` files. Alternatively for VSCode users the variables could be set in the `env` section of the launch.json file
+or more conveniently by setting the `.env` and `.env.test` files. Alternatively, for VSCode users, the variables could be set in the `env` section of the launch.json file
 
 ### Running the server
 
@@ -134,3 +140,24 @@ The models and schema for the backend API are documented in the [readme_schema](
 ## Api Endpoint documentation
 
 The endpoints for the backend API are documented in the [README_API](./readme_api.md) file.
+
+## Deployment to Render
+
+Deploying to production involves 2 steps. [Render](https://dashboard.render.com/) is the hosting service chosen for the project but any other cloud provider would work.
+
+### Steps
+
+1. Sign up for a Render account at the link provided above.
+2. Fork the [github project](https://github.com/AlbertoBonfiglio/FSND_Capstone)
+3. Provision a postgreSQL instance on Render and take note of the public address. Keep this secret as it included the username and password to access the database.
+4. Provision a web service
+   1. Select build from repository
+   2. Connect to the forked github repository
+   3. Select a convenient region
+   4. set /backend as the root directory
+   5. set `gunicorn --bind=0.0.0.0:10000 -w 4 --timeout=7200 app:app` as the start command
+   6. set `/status` as the health checlk path
+   7. set all the environment variables (except the FLASK ones) with the appropriate values
+5. Once provisioned the api can be tested using Postman. Remember to set the `url` variable to the correct API address (e.g.: `https://fsnd-capstone-711w.onrender.com`)
+6. The project is also now set up in such a way that committing to the main branch or merging to the main branch will cause an automatic redeployment.
+    
