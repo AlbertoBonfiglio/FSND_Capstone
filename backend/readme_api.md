@@ -15,6 +15,9 @@ The following provides detailed documentation of the backend API endpoints inclu
   - [`DELETE 'http[s]://<HOST>users/<id>'`](#delete-httpshostusersid)
 - [Robots Endpoints](#robots-endpoints)
   - [`GET 'http[s]://<HOST>robot'`](#get-httpshostrobot)
+- [IOT Endpoints](#iot-endpoints)
+  - [`GET 'http[s]://<HOST>/iot/<string:MAC>/getRobotSettings'`](#get-httpshostiotstringmacgetrobotsettings)
+  - [`POST 'http[s]://<HOST>/iot/<string:MAC>/postSensorReadings'`](#post-httpshostiotstringmacpostsensorreadings)
 
 ### Status Endpoint
 
@@ -227,6 +230,7 @@ The following provides detailed documentation of the backend API endpoints inclu
 ```
 
 ---
+
 ### Robots Endpoints
 
 #### `GET 'http[s]://<HOST>robot'`
@@ -251,3 +255,56 @@ The following provides detailed documentation of the backend API endpoints inclu
 ```
 
 ---
+
+### IOT Endpoints
+
+The `iot` endpoints are used by the robots to post readings and retrieve configuration parameters. They are secured by an `API KEY` generated randomly for each user that is passed in the request header `XApplicationKey`.
+
+#### `GET 'http[s]://<HOST>/iot/<string:MAC>/getRobotSettings'`
+
+- Fetches the preferences object of the robot with the passed MAC address
+- Request Arguments: None
+- Usage example: `http[s]://<host>/iot/9C-B6-D0-3E-9A-BA/getRobotSettings`
+- Returns: A JSON object with a key, `data` containing an array of json objects, and a `success` boolean key.
+  
+  ```json
+  {
+      "data": [
+          {   "roaming_frequency": 500 },
+          {   "roaming_distance": 5 },
+          ...
+      ],
+      "success": true
+  }
+  ```
+
+- If the api_key and the robot  whose mac address is used do not belong to the same user a 404 error is returned.
+- If the api_key is not found a 401 error is returned
+
+#### `POST 'http[s]://<HOST>/iot/<string:MAC>/postSensorReadings'`
+
+- Posts the sensor readings of the robot with the passed MAC address
+- Request Arguments: `MAC` the mac address of the robot
+- Payload: a JSON object with a `data` key containing a JSON Tuple array, and an optional `date` datetime value
+  
+  ```json
+  {
+    "data": [
+        {"temperature": 27.5},
+        {"coltage": 3.7}
+    ],
+    "date": "2024-02-19 01:13:54+00"
+  }
+  ```
+
+- Usage example: `http[s]://iot/9C-B6-D0-3E-9A-BC/postSensorReadings`
+- Returns: A JSON object with a `success` boolean key.
+
+  ```json
+  {
+      "success": true
+  }
+  ```
+
+- If the api_key and the robot  whose mac address is used do not belong to the same user a 404 error is returned.
+- If the api_key is not found a 401 error is returned

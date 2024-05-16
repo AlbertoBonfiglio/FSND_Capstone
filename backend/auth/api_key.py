@@ -31,13 +31,10 @@ def requires_api_key(func):
                 raise AuthError(401, 'Unauthorized', 'Invalid or expired API key')    
                 
             # checks the robot belongs to the user whose apikey is being used      
-            body = request.get_json()
-            mac = body.get("mac", 'not found').strip()
-
             robot = Robot.query \
-              .filter(Robot.mac == mac) \
-              .filter(Robot.user_id == user.id) \
-              .first_or_404('MAC address not found for API key')  
+                .filter(Robot.mac == request.view_args["MAC"]) \
+                .filter(Robot.user_id == user.id) \
+                .first_or_404('MAC address or user not found for API key')  
                  
         except AuthError as err:
             print(err)  # for console debugging
