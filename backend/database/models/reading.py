@@ -1,6 +1,6 @@
 ''' Readings Model Module '''
 import datetime as dt
-from sqlalchemy import ForeignKey, Index, func, text, TIMESTAMP
+from sqlalchemy import ForeignKey, func, text, TIMESTAMP
 from sqlalchemy.dialects.postgresql import UUID, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.connection import db
@@ -22,9 +22,8 @@ class Reading(db.Model):  # type: ignore
 
     def __init__(self, robot_id, date=None, data={}):
         self.robot_id = robot_id
-        self.data = data,
+        self.data = data
         self.date = date
-        
 
     def insert(self):
         ''' insert '''
@@ -52,7 +51,7 @@ class Reading(db.Model):  # type: ignore
     def format_short(self):
         ''' format to json'''
         return {
-            'readings': self.data,
+            'readings': self.data,  # to fix an issue with double array
             'date': self.date
         }
 

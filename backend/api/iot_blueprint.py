@@ -1,7 +1,7 @@
 import sys
 from flask import Blueprint, jsonify, request
 from flask_cors import cross_origin
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, DataError
 
 from api.error_handlers import integrity_error, internal_error, not_found, unprocessable_error
 from auth.api_key import requires_api_key
@@ -45,6 +45,10 @@ def post_sensor_readings(robot: Robot, MAC: str):
     return jsonify({
         'success': True
     })
+    
+  except DataError as err:
+      print(sys.exc_info(), err)
+      return unprocessable_error(err)
     
   except ValueError as err:
       print(sys.exc_info(), err)

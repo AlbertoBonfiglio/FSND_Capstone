@@ -24,6 +24,7 @@ def requires_api_key(func):
             
             # checks the api key is a valid one
             api_key = request.headers[API_KEY_HEADER]
+            # TODO [ ] Consider implementing a caching mechanism to speed up lookups    
             user: User = User.query \
                 .filter(User.api_key == api_key) \
                 .first()
