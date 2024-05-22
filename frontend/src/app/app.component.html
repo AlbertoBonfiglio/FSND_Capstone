@@ -230,6 +230,9 @@
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
+      @if ((user | async) == null) {
+        <app-auth-button></app-auth-button>
+      }
       <div class="pill-group">
         @for (item of [
           { title: 'Explore the Docs', link: 'https://angular.dev' },

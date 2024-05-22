@@ -52,9 +52,17 @@ pip install -r requirements.txt
 
 ### Setup Auth0
 
+Setting up Auth0 to work with roles and permissions when accessing APIs with a Single Page Application is ridicolously hard. There is no automatic way to set a user role or grant permission at login without either granting roles and permissions manually in the dashboard, or using a custom action attached to the post login flow. Auth0 does not allow a SPA application to have a `grant:credentials` permission for security reasons and the Auth0 Management api fails in the action when it tries to grant a user a default role or permission. The work-around is to change the app type from `Single Page Application` to `regular web app` which can have the `grant:credentials` permission.
+
+However, the library provided to manage the login and sign up flow in the frontend app doesn't work if the application type is set to `regular web app`.
+
+To make all work, the `Authentication Extension` needs to be added and configured. This opens a new api that can be called inside the action and allows assigning custom roles and permisiions to the user profile. In the background it sets up another application and api that are used internally for the default role granting and to add roles and permission to the tokens. Additionally, it can be called externally, and the Python API uses it in the Admin endpoint to allow an admin to manage users in the front-end app.
+
+The following are the steps to set up the Auth0 system
+
 1. Create a new Auth0 Account
 2. Select a unique tenant domain
-3. Create a new, Regular web application, with Client Secret Post as the authentication method. Make a note of the Client secret as it will be needed later. Finally, go to the Advanced settings section for the app and make sure the following grant types are enabled: `Implicit`, `Authorization Code`, `Refresh Token`, `Client Credentials`, and `Password`. This will allow using an api call to retrieve a valid token for testing in Postman.
+3. Create a new `Single Page Application`. Make a note of the Client secret as it will be needed later. Finally, go to the Advanced settings section for the app and make sure the following grant types are enabled: `Implicit`, `Authorization Code`, `Refresh Token`, and `Password`. This will allow using an api call to retrieve a valid token for testing in Postman.
 4. Create a new API
    - in API Settings:
      - Enable RBAC
@@ -70,16 +78,27 @@ pip install -r requirements.txt
    - `post:robot`: Posts a robot for a user
    - `delete:user`: Deletes a user
    - `delete:robot`: Deletes a user robot
-6. Create new roles for:
-   - Admin
-     - can perform all actions on all users and can hard delete data from the database. This role is assigned manually in the Auth0 console.
-     - assign all permissions to this role.
-   - User
-     - can perform all actions on robots and data he or she owns. Attempting to alter data using another user id results in an 'Unauthorized' error.
-     - cannot hard delete data. Even if the hard flag is attached to the url query, the API will just soft delete the data by setting the status flag to 'deleted'.
-     - assign all permissions EXCEPT for `get:users` to this role.
-7. Navigate to the Actions tab in the Auth0 console and select Flows and then Login. Add a custom action and copy/paste the code from [action.js](../Auth0/actions.js). This will add a default user role to a user if none is assigned. It will also add the user roles and permissions to the authorization token returned when a user signs up. Don't forget to add `domain`, `clientId`, and `clientSecret` and their respective values to the Action secrets.
-8. Test your endpoints with [Postman](https://getpostman.com).
+6. Navigate to the Extensions tabs and install Auth0 Authorization
+   - detailed instructions on how to configure the extension can be found [here](https://auth0.com/docs/customize/extensions/authorization-extension) and [here](https://auth0.com/docs/api/authorization-extension?http#introduction). Do not forget to enable API Access.  
+7. Once the extension is configured and the API access enabled,
+   1. Create the same permissions as in step 5. Also create a `grant:role` permission.
+   2. Create roles for:  
+      - Admin
+        - can perform all actions on all users and can hard delete data from the database. This role is assigned manually in the Auth0 console.
+        - assign all permissions to this role.
+      - User
+        - can perform all actions on robots and data he or she owns. Attempting to alter data using another user id results in an 'Unauthorized' error.
+        - cannot hard delete data. Even if the hard flag is attached to the url query, the API will just soft delete the data by setting the status flag to 'deleted'.
+        - assign all permissions EXCEPT for `get:users` and `grant:role` to this role.
+8. Navigate to the Actions tab in the Auth0 console and select Flows and then Login. Add a custom action and copy/paste the code from [action.js](../Auth0/actions.js). This will add a default user role to a user if none is assigned. It will also add the user roles and permissions to the authorization token returned when a user signs up. The action needs to be configured with the following secrets from the app created by the `Authorization extension`:
+   - `domain`,
+   - `clientId`,
+   - `clientSecret`
+   - `audience` and
+   - `extensionUrl`.
+Also, install the following packages `auth0@4.3.1`, `node-fetch@2.7.0`, and `axios@1.7.2`. MAke sure `node-fetch` stays at the version 2.x.x level due to incompatibility with javascript ES system when importing the module.
+9. Test your endpoints with [Postman](https://getpostman.com).
+
    - Use the samples ones already configured in postman, or
    - Register 2 users and assign the Admin role to one and User role to the other.
    - Auth0 needs to be configured with a default directory for the call to oauth/token to retrieve the access token to work
@@ -101,7 +120,7 @@ To run the backend in development using flask several environment variables need
 
 1. `CORS`: by deafault is set to `*` which accepts all connection origins. Should be changed to something more restrictive for production,
 2. `DATABASE_URI`: the database uniform resource locator. I.E.: `postgresql://tankrover:$twryedq63fd2fh@localhost:5438/tankrover`,
-3. `TRACK_MODS`: Flask-SQLAlchemy can set up its session to track inserts, updates, and deletes for models, then send a Blinker signal with a list of these changes either before or during calls to session.flush() and session.commit(). It's expensive and better left to `FALSE` 
+3. `TRACK_MODS`: Flask-SQLAlchemy can set up its session to track inserts, updates, and deletes for models, then send a Blinker signal with a list of these changes either before or during calls to session.flush() and session.commit(). It's expensive and better left to `FALSE`
 4. `AUTH0_DOMAIN`: the Auth0 custom domain for the APP,
 5. `AUTH0_AUDIENCE`: the audience for the Auth0 API,
 6. `AUTH0_ALGORITHMS`: by default `RS256`,
@@ -160,4 +179,3 @@ Deploying to production involves 2 steps. [Render](https://dashboard.render.com/
    7. set all the environment variables (except the FLASK ones) with the appropriate values
 5. Once provisioned the api can be tested using Postman. Remember to set the `url` variable to the correct API address (e.g.: `https://fsnd-capstone-711w.onrender.com`)
 6. The project is also now set up in such a way that committing to the main branch or merging to the main branch will cause an automatic redeployment.
-    

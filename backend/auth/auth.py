@@ -197,7 +197,7 @@ def check_permissions(permissions = [], payload = [], roles = []):
     Checks the user role is admin
 '''
 def check_admin_permissions(payload=[]):
-    roles = ['tankrover_admin']
+    roles = ['admin']
     return any(item in payload for item in roles)
 
 
@@ -268,7 +268,7 @@ def requires_ownership(func):
         g.isOwner = False
         try:
             payload = kwargs.get('token_payload')
-            g.isAdmin = check_admin_permissions(payload["tankrover_api/roles"])
+            g.isAdmin = check_admin_permissions(payload["user_profile"]["roles"])
             
             if (g.isAdmin == False):
                 g.userAuthId = payload["sub"] # gets the authId from the token payload
@@ -337,7 +337,7 @@ def requires_permissions(permissions = []):
             try:
                 payload = kwargs.get('token_payload', None)
                 check_permissions(
-                    permissions, payload["tankrover_api/user_permissions"])
+                    permissions, payload["user_profile"]["permissions"])
        
             except AuthError as err:
                 print(err)  # for console debugging
