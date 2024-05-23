@@ -280,7 +280,16 @@ def requires_ownership(func):
                                 raise AuthError(401, 'Unauthorized', 'Unauthorized operation. Requires ownership')
 
                         else:    
-                            user: User = User.query.get(request.view_args['id'])
+                            qry = User.query
+                            userid = request.view_args['id']
+                            isAuth = userid.split('|')[0] == 'auth0'
+                            if isAuth:
+                                qry = qry.filter(User.auth_id == userid)
+                            else:
+                                qry = qry.filter(User.id == userid)
+                                             
+                            user: User = qry.first()
+                            
                             if (user == None):
                                 raise AuthError(404, 'Not Found', 'Authorization User not found.')
                             if (user.auth_id.lower() != g.userAuthId.lower()):

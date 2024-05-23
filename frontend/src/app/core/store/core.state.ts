@@ -1,7 +1,6 @@
 import { UserState } from "./index";
 
-export interface State {
-  //menus: MenusState;
+export interface AppState {
   // ✨ New 👇
-  Auth: UserState;
+  auth: UserState;
 }

@@ -230,8 +230,10 @@
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">
-      @if ((user | async) == null) {
+      @if (!(user$ | async)) {
         <app-auth-button></app-auth-button>
+      } @else {
+        <button mat-raised-button (click)="refresh()">refresh</button>
       }
       <div class="pill-group">
         @for (item of [

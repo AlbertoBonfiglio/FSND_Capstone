@@ -1,11 +1,11 @@
 import { ActionReducerMap, MetaReducer } from "@ngrx/store";
-import { State } from "./core.state";
 import * as UserReducer from "./user/user.reducer";
+import { AppState } from "./core.state";
 
-export const reducers: ActionReducerMap<State> = {
+export const reducers: ActionReducerMap<AppState> = {
   //menus: MenusReducer.reducer,
   // ✨ New 👇
-  Auth: UserReducer.reducer,
+  auth: UserReducer.reducer,
 };
 
-export const metaReducers: MetaReducer<State>[] = [];
+export const metaReducers: MetaReducer<AppState>[] = [];

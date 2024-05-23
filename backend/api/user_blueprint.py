@@ -80,6 +80,35 @@ def get_one(id):
     return internal_error(err)
 
 
+@user_api.route(f'/{endpoint}/auth/<string:id>', methods=['GET'])
+@cross_origin()
+@requires_auth(
+    requires_permissions(["get:user"]),
+    requires_ownership
+)
+def get_one_by_auth(id):
+  try:
+    record: User = User.query.filter(User.auth_id == id).first()
+    if (record is None):
+        return not_found(f'User # {id} not found.')
+
+    if request.args.get('expanded', False, type=is_it_true):
+      return jsonify({
+          'success': True,
+          'data': record.format_long()
+      })
+    else:
+      return jsonify({
+          'success': True,
+          'data': record.format()
+      })
+
+  except Exception as err:
+    print(sys.exc_info(), err)
+    return internal_error(err)
+
+
+
 @user_api.route(f'/{endpoint}', methods=['POST'])
 @cross_origin()
 @requires_auth(

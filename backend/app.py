@@ -24,7 +24,7 @@ def create_app(env=".env"):
         setup_db(_app, Config)
 
     # Sets up cors. For the time being sets the allowed origins to all
-    CORS(_app, resources={r"/api/*": {"origins": os.environ["CORS"]}})
+    CORS(_app, resources={r"/*": {"origins": os.environ["CORS"]}})
 
     @_app.after_request
     def after_request(response):
