@@ -1,6 +1,7 @@
-import { UserState } from "./index";
+import { AuthState } from "./index";
+import { SettingsState } from "./settings/settings.state";
 
 export interface AppState {
-  // ✨ New 👇
-  auth: UserState;
+  auth: AuthState;
+  settings: SettingsState;
 }

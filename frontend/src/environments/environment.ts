@@ -2,6 +2,7 @@ import { IEnvironment } from './environment.type';
 
 export const environment: IEnvironment = {
   production: true,
+  appTitle: "Bonfibots!",
   apiUri: 'http://localhost:5002',
   auth: {
     clientId: 'iQAVMWxA8pqv0LRikpzGbLg04WIKHg6u',
@@ -9,4 +10,5 @@ export const environment: IEnvironment = {
     domain: 'darthbert-udacity.au.auth0.com',
     audience: 'tankrover_api'
   },
+  splashDelay: 3000
 };

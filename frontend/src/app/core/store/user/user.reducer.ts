@@ -1,19 +1,21 @@
 import { Action, createReducer, on } from "@ngrx/store";
-import { initialState, UserState } from "./user.state";
-import * as UserActions from "./user.actions";
+import * as AuthActions from "./user.actions";
+import { AuthState, initialAuthState } from "./user.state";
 
-export const userReducer = createReducer(
-  initialState,
-  on(UserActions.userChangedFromAuth0SDK, (state, { user }) => ({
+export const authReducer = createReducer(
+  initialAuthState,
+  on(AuthActions.userChangedFromAuth0SDK, (state, { user }) => ({
     ...state,
     user: user,
   })),
-  on(UserActions.userAppDataLoaded, (state, { data }) => ({
+  on(AuthActions.userAppDataLoaded,
+     AuthActions.userDefaultAppDataCreated, 
+    (state, { data }) => ({
     ...state,
     appData: data,
   }))
 );
 
-export function reducer(state: UserState | undefined, action: Action) {
-  return userReducer(state, action);
+export function authReducerFn(state: AuthState | undefined, action: Action) {
+  return authReducer(state, action);
 }

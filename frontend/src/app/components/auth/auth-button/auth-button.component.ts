@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import {MatButton} from '@angular/material/button';
 import {MatTooltip} from '@angular/material/tooltip';
 import { Store } from '@ngrx/store';
-import { allUserActions } from '../../../core/store';
+import { allAuthActions } from '../../../core/store';
 
 @Component({
   selector: 'app-auth-button',
@@ -17,6 +17,6 @@ export class AuthButtonComponent {
 
   loginWithRedirect(): void {
     console.log("loginWithRedirect", this.store);
-    this.store.dispatch(allUserActions.loginFlowInitiated())
+    this.store.dispatch(allAuthActions.loginFlowInitiated())
   }
 }

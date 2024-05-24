@@ -1,5 +1,5 @@
-import { ApplicationConfig, isDevMode } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { APP_INITIALIZER, ApplicationConfig, isDevMode } from '@angular/core';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -12,8 +12,8 @@ import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { UserEffects } from './core/store/user/user.effects';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpInterceptorFn } from '@angular/common/http';
-import { userReducer } from './core/store/user/user.reducer';
-import { authFeaureKey } from './core/store';
+import { authFeatureKey, authReducerFn, settingsFeatureKey, settingsReducerFn } from './core/store';
+
 
 const Auth0Config = {
   // The domain and clientId were configured in the previous chapter
@@ -33,24 +33,6 @@ const Auth0Config = {
       `${env.apiUri}/*`
     ]
   }
-
-  /* Specify configuration for the interceptor              
-  httpInterceptor: {
-    allowedList: [{
-        // Match any request that starts 'https://{yourDomain}/api/v2/' (note the asterisk)
-      uri: 'https://{yourDomain}/api/v2/*',
-      tokenOptions: {
-        authorizationParams: {
-          // The attached token should target this audience
-          audience: `https://${env.auth.domain}/api/v2/`,
-          // The attached token should have these scopes
-          scope: 'read:current_user'
-        }
-      }
-    }]
-  
-  }
-    */
 }
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -60,7 +42,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    { provide: APP_INITIALIZER, 
+      useValue: () =>
+        new Promise((resolve) => setTimeout(resolve, env.splashDelay)),
+        // https://blog.stackademic.com/how-and-when-to-use-app-initializer-in-standalone-angular-16-application-37b63a56e185
+      multi: true,
+    },
+    provideRouter(routes,  withComponentInputBinding()),
     provideAnimationsAsync(),
     provideServiceWorker('ngsw-worker.js', {
         enabled: !isDevMode(),
@@ -68,7 +56,8 @@ export const appConfig: ApplicationConfig = {
     }),
   
     provideStore(),
-    provideState(authFeaureKey, userReducer),
+    provideState(authFeatureKey, authReducerFn),
+    provideState(settingsFeatureKey, settingsReducerFn),
     provideEffects([UserEffects]),
     provideStoreDevtools({
       name: 'TankRover',
@@ -87,6 +76,6 @@ export const appConfig: ApplicationConfig = {
         authInterceptor,
         authHttpInterceptorFn,
       ])
-    ),
-  ]
+    ), provideAnimationsAsync(),
+  ], 
 };
