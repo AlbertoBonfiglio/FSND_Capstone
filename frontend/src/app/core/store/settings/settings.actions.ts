@@ -1,5 +1,5 @@
 import { createAction, props } from "@ngrx/store";
-import { Theme } from "./settings.state";
+import { Theme } from "../../enums";
 
 export const allSettingsActions = {
   setTheme: createAction("Set theme"),

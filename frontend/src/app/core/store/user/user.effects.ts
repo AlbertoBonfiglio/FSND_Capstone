@@ -6,8 +6,7 @@ import * as UserActions from "./user.actions";
 import { BackendService } from "../../../services/backend.service";
 import { Store } from "@ngrx/store";
 import { selectAuthUser } from "./user.selectors";
-import { AppUser } from "../../models/user.model";
-import { Theme } from "../settings/settings.state";
+import { AppUser, UserPrefs } from "../../models/user.model";
 
 @Injectable()
 export class UserEffects {
@@ -41,7 +40,7 @@ export class UserEffects {
             .getUserWithAuth(obs[1].sub) //gets the user from the database
             .pipe( 
               tap ((response) => console.log("getUserWithAuth", response)),
-              map((response) => this.store.dispatch(UserActions.userAppDataLoaded({ data: response.data}))),
+              map((response) => this.store.dispatch(UserActions.userAppDataLoaded({ data: response}))),
               catchError((err) => (err.status === 404)
                 ? of(this.store.dispatch(
                       UserActions.createDefaultAppUserData({ 
@@ -49,7 +48,7 @@ export class UserEffects {
                           auth_id: obs[1].sub,
                           name: obs[1].name,
                           email: obs[1].email,
-                          preferences: {theme: Theme.system }
+                          preferences: new UserPrefs()
                         } 
                       })
                     )
@@ -72,7 +71,7 @@ export class UserEffects {
           .postUser(action.data as AppUser) //gets the user from the database
             .pipe( 
               tap ((response) => console.log("createDefaultAppUserData", response)),
-              map((response) => this.store.dispatch(UserActions.userAppDataLoaded({ data: response.data}))),
+              map((response) => this.store.dispatch(UserActions.userAppDataLoaded({ data: response}))),
               catchError(
                 (err) => of(console.log(err))
               ) 

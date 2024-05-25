@@ -9,6 +9,7 @@ The following provides detailed documentation of the backend API endpoints inclu
 - [User Endpoints](#user-endpoints)
   - [`GET 'http[s]://<HOST>users'`](#get-httpshostusers)
   - [`GET 'http[s]://<HOST>users/<id>'`](#get-httpshostusersid)
+  - [`GET 'http[s]://<HOST>users/auth/<id>'`](#get-httpshostusersauthid)
   - [`POST 'http[s]://<HOST>users'`](#post-httpshostusers)
   - [`PATCH 'http[s]://<HOST>users/<id>'`](#patch-httpshostusersid)
   - [`PATCH 'http[s]://<HOST>users/<id>/changeApiKey'`](#patch-httpshostusersidchangeapikey)
@@ -87,6 +88,38 @@ The following provides detailed documentation of the backend API endpoints inclu
   "data": {
       "api_key": "Pism_XIAdU7L7zECR7uJ_g",
       "auth_id": "auth0|xxxyy",
+      "email": "name@domain.com",
+      "id": "8f6df43a-8699-4cca-97f4-d0f66dc49291",
+      "name": "Beardo",
+      "preferences": {
+          "complaining": false,
+          "dancing": [
+              "2 left feet",
+              "limpada"
+          ]
+      },
+      "robots": 1,
+      "status": "active"
+    },
+    "success": true
+}
+```
+
+#### `GET 'http[s]://<HOST>users/auth/<id>'`
+
+- Fetches the user object for the passed Auth0 id
+- Request Arguments: `id:string` the Auth0 issued id  of the user
+- Query Arguments:
+  - `expanded`: a boolean that if set to `true` returns the list of robots for each user instead of a count  
+- Usage example: `http[s]://<host>users/auth/auth0|xxxyyd0f66dc49291`
+- Returns: A JSON object with a key, `data`, containg the user object, and a `success` boolean key.
+- Permissions: Requires a role of `admin` or `user` and a permission of `get:user`. If the role is `user` the API compares the id passed to the id of the logged in user. If not matching returns an Unautorized 401 error.
+  
+```json
+{
+  "data": {
+      "api_key": "Pism_XIAdU7L7zECR7uJ_g",
+      "auth_id": "auth0|xxxyyd0f66dc49291",
       "email": "name@domain.com",
       "id": "8f6df43a-8699-4cca-97f4-d0f66dc49291",
       "name": "Beardo",
