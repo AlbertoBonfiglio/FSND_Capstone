@@ -8,9 +8,11 @@ import { environment as env} from '../environments/environment';
 import { provideState, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { UserEffects } from './core/store/user/user.effects';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { authFeatureKey, authReducerFn, settingsFeatureKey, settingsReducerFn } from './core/store';
+import { authFeatureKey, authReducerFn, robotFeatureKey, robotReducerFn, settingsFeatureKey, settingsReducerFn, userFeatureKey, userReducerFn } from './core/store';
+import { AuthEffects } from './core/store/auth/auth.effects';
+import { UserEffects } from './core/store/user/user.effects';
+import { RobotEffects } from './core/store/robot/robot.effects';
 
 const Auth0Config = {
   // The domain and clientId were configured in the previous chapter
@@ -19,8 +21,10 @@ const Auth0Config = {
   authorizationParams: {
     redirect_uri: window.location.origin,
     audience: env.auth.audience,
+    scope: "openid profile email offline_access"
   },
-
+  cacheLocation: 'localstorage' as 'localstorage',
+  useRefreshTokens: true,
   api: {
     serverUrl: env.apiUri,
   },
@@ -54,8 +58,10 @@ export const appConfig: ApplicationConfig = {
   
     provideStore(),
     provideState(authFeatureKey, authReducerFn),
+    provideState(userFeatureKey, userReducerFn),
     provideState(settingsFeatureKey, settingsReducerFn),
-    provideEffects([UserEffects]),
+    provideState(robotFeatureKey, robotReducerFn),
+    provideEffects([AuthEffects, UserEffects, RobotEffects]),
     provideStoreDevtools({
       name: 'TankRover',
       maxAge: 25, // Retains last 25 states

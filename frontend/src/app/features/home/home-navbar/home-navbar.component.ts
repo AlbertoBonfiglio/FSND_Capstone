@@ -7,13 +7,15 @@ import { allAuthActions, selectAuthUser, selectIsAdmin } from '../../../core/sto
 import { environment as env} from '../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { Observable, combineLatest, map, tap } from 'rxjs';
-import { MatButton, MatButtonModule } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-home-navbar',
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     MatIconModule,
     MatToolbarModule,
     MatButtonModule

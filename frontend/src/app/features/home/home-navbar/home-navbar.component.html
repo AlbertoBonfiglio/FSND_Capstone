@@ -1,7 +1,12 @@
-<mat-toolbar color="primary">
+<mat-toolbar class="mat-elevation-z8" color="primary">
   <mat-toolbar-row>
-    <img class="logo-image" src="../../../../assets/_555a0a30-519a-4c63-8042-9a28b59aea31.jpg" alt="">
-    <span>{{title}}</span>
+    <a routerLink=".">
+      <img 
+        class="logo-image" 
+        src="../../../../assets/_555a0a30-519a-4c63-8042-9a28b59aea31.jpg" alt=""
+      >
+    </a>
+    <span class="logo-text">{{title}}</span>
     <span class="flex-spacer"></span>
     @if (data$|async; as data) {
       <button mat-icon-button aria-label="Example user verified icon" (click)="notImplementedYet()"> 

@@ -1,33 +1,35 @@
 import { createFeatureSelector, createSelector } from "@ngrx/store";
-import { AuthState } from "./user.state";
-import { UserRole } from "../../enums";
+import { UserState } from "./user.state";
 
-export const authFeatureKey = "Auth";
+export const userFeatureKey = "User";
 
-export const selectAuthState = createFeatureSelector<AuthState>(authFeatureKey);
+export const selectUserState = createFeatureSelector<UserState>(userFeatureKey);
 
-export const selectAuthUser = createSelector(
-  selectAuthState,
-  (state: AuthState) => state?.user
-);
-
-export const selectIsLoggedIn = createSelector(
-  selectAuthUser,
-  (user) => !!user
-);
-
-export const selectUserRoles = createSelector(
-  selectAuthUser,
-  (user:any) => user!.user_profile.roles ?? []
-);
-
-export const selectUserPermissions = createSelector(
-  selectAuthUser,
-  (user:any) => user!.user_profile.permissions ?? []
+export const selectUser = createSelector(
+  selectUserState,
+  (state: UserState) => state?.appUser
 );
 
 
+export const selectAppUserId = createSelector(
+  selectUser,
+  (user) => user?.id
+);
 
-export const selectIsAdmin = createSelector(selectUserRoles, (userRoles) =>
-  userRoles?.includes(UserRole.admin)
+export const selectAppUserRobots = createSelector(
+  selectUser,
+  (user) => (user) 
+    ? (Array.isArray(user?.robots)) 
+      ? user.robots
+      : []
+    : []
+);
+
+export const selectAppUserRobotsCount = createSelector(
+  selectUser,
+  (user) => (user) 
+    ? (Array.isArray(user?.robots)) 
+      ? user.robots.length
+      : user.robots
+    : 0
 );

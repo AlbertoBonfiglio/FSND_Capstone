@@ -1,0 +1,25 @@
+@use '@angular/material' as mat;
+
+.mat-mdc-card.robots {
+  margin-top: 1em;
+ // max-width: calc(100vw - 32px)!important;
+
+  .mat-mdc-list-item {
+    height: auto !important;
+  }
+
+}
+
+mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
+  justify-content: end;
+}
+
+button {
+  margin-left: 1em;
+}
+
+mat-list-option.hide-option {
+  .mdc-list-item__end {
+    display: none !important;
+  }
+}

@@ -1,0 +1,20 @@
+<div class="robot-tile">
+  <div class="avatar">
+    <img [src]="getAvatar()" alt="">
+  </div>
+  <div class="content">
+    <h3 matListItemTitle>{{robot?.name}}</h3>
+    <div matListItemLine>
+      <span>MAC: {{robot?.mac}}</span><br>
+      <span class="">{{robot?.description}}</span><br>
+    </div>
+  </div>
+  <div class="actions">
+    <button mat-mini-fab color="primary" (click)="onEditClick($event)">
+      <mat-icon>plus_one</mat-icon>
+    </button>
+    <button mat-mini-fab color="warn" (click)="onDeleteClick($event)">
+      <mat-icon>plus_one</mat-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,30 @@
+@if (fabTogglerState === 'active'){
+  <!-- this allows for close on click anywhere on the screen -->
+  <div id="fab-dismiss"(click)="onToggleFab()"></div>
+}
+
+<div class="fab-container"
+  [ngStyle]="{'display': isVisible ? 'flex': 'none' }"  >
+  <button mat-fab class="fab-toggler" (click)="onToggleFab()">
+    <em class="material-icons" [@fabToggler]="{ value: fabTogglerState }">
+      {{icon}}
+    </em>
+    <!-- Animation here -->
+  </button>
+
+  @if (button$ | async; as button){
+    <div [@speedDialStagger]="button$.value.length">
+      <!-- and here -->
+      @for (btn of button$.value; track btn) {
+        <button
+          mat-mini-fab
+          class="fab-secondary"
+          color="secondary"
+          (click)="onButtonClick(btn)"
+        >
+          <em class="material-icons">{{ btn.icon }}</em>
+        </button>
+      }
+    </div>
+  }
+</div>

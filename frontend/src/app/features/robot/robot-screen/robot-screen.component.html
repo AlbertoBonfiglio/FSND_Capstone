@@ -1,0 +1,21 @@
+@if (isEdit$|async) {
+  <p>Edit robot-screen works!</p>
+} @else {
+  <p>Add robot-screen works!</p>
+}
+
+@if (robot$ | async; as robot ) {
+  {{robot.mac}}
+}
+
+<mat-card class="robots">
+  <mat-card-header>
+    <mat-card-title>Robots</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button >Add</button>
+  </mat-card-actions>
+</mat-card>

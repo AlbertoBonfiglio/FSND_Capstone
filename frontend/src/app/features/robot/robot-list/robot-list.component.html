@@ -1,0 +1,24 @@
+<mat-card class="robots">
+  <mat-card-header>
+    <mat-card-title>Robots</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-selection-list #robots [multiple]="false">
+      @for (robot of robots$ |async; track robot) {
+        <mat-list-option class="hide-option" 
+          (click)="selectRobot(robot)" 
+          color="primary" 
+          [selected]="isSelected(robot)">
+          <app-robot-tile 
+            [robot]="robot"
+            (editClick) = "onEditRobot($event)"
+            (deleteClick) = "onDeleteRobot($event)"
+          />
+        </mat-list-option>
+      }
+    </mat-selection-list>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button (click)="onAddRobot()">Add</button>
+  </mat-card-actions>
+</mat-card>

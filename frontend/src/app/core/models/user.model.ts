@@ -1,4 +1,5 @@
 import { Language, Status, Theme } from "../enums";
+import { AppRobot } from "./robot.model";
 
 export class AppUser {
   id?: string;
@@ -7,6 +8,7 @@ export class AppUser {
   email?: string;
   api_key?: string;
   preferences: UserPrefs = new UserPrefs()
+  robots: AppRobot[] | number = 0
   status: Status = Status.active; 
 }
 

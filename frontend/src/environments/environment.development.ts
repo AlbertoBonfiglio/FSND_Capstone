@@ -10,5 +10,5 @@ export const environment: IEnvironment = {
     domain: 'darthbert-udacity.au.auth0.com',
     audience: 'tankrover_api'
   },
-  splashDelay: 500
+  splashDelay: 1500
 };

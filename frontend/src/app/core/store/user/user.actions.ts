@@ -1,31 +1,38 @@
 import { createAction, props } from "@ngrx/store";
-import { User as Auth0User } from "@auth0/auth0-spa-js";
+import { AppUser } from "../../models/user.model";
+import { User } from "@auth0/auth0-angular";
 
-export const allAuthActions = {
-  loginFlowInitiated: createAction("Login Flow Initiated"),
-  loginFlowLoadAppUserData: createAction("Login Flow LoadAppUserData"),
-  loginFlowCompleted: createAction("Login Flow Completed"),
-  logoutFlowInitiated: createAction("Logout Flow Initiated"),
-};
-
-export const userChangedFromAuth0SDK = createAction(
-  "[Auth0 SDK] User Changed",
-  props<{ user: Auth0User|null }>()
+export const loadAppUserData = createAction(
+  "[User] Load data",
+  props<{ data: User | null }>()
 );
 
-export const userAppDataLoaded = createAction(
-  "[Auth0 SDK] User App Data Loaded",
-  props<{ data: {}|null }>()
+export const appUserDataLoaded = createAction(
+  "[User] User App Data Loaded",
+  props<{ data: AppUser | null }>()
 );
 
 export const createDefaultAppUserData = createAction(
-  "[Auth0 SDK] Create Default User App Data",
-  props<{ data: {}|null }>()
+  "[User] Create Default User App Data",
+  props<{ data: AppUser|null }>()
 );
 
-export const userDefaultAppDataCreated = createAction(
-  "[Auth0 SDK] Default User App Data Loaded",
-  props<{ data: {}|null }>()
+export const defaultAppUserDataCreated = createAction(
+  "[User] Default User App Data Loaded",
+  props<{ data: AppUser|null }>()
 );
 
-export const refreshDataset = createAction("[Auth0 SDK] Refresh data");
+export const editAppUserData = createAction(
+  "[User] Edit user data",
+   props<{ data: AppUser|null }>()
+);
+
+export const saveAppUserData = createAction(
+  "[User] Upsert user data",
+  props<{ data: AppUser|null }>()
+);
+
+export const saveAppUserDataSuccess = createAction(
+  "[User] Upsert user data",
+  props<{ data: AppUser|null }>()
+);

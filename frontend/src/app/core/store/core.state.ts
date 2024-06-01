@@ -1,9 +1,12 @@
-import { AuthState } from "./index";
+import { AuthState, RobotState, UserState } from "./index";
 import { SettingsState } from "./settings/settings.state";
 
 export interface AppState {
   auth: AuthState;
+  user: UserState;
   settings: SettingsState;
+
+  robots: RobotState;
 }
 
 

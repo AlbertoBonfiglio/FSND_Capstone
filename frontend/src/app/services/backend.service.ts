@@ -13,25 +13,25 @@ export class BackendService {
   constructor(private http: HttpClient) { }
 
 
-  getUser(userId: string): Observable<AppUser> {
+  getUser(userId: string, expanded:boolean=true): Observable<AppUser> {
     return this.http
-      .get<AppUser>(`${env.apiUri}/users/${userId}`)
+      .get<AppUser>(`${env.apiUri}/users/${userId}?expanded=${expanded}`)
       .pipe(
         map((res:any) => res.data)
       );;
   }
 
-  getUsers(): Observable<AppUser[]> {
+  getUsers(expanded:boolean=true): Observable<AppUser[]> {
     return this.http
-      .get<AppUser>(`${env.apiUri}/users`)
+      .get<AppUser>(`${env.apiUri}/users?expanded=${expanded}`)
       .pipe(
         map((res:any) => res.data)
       );;
   }
 
-  getUserWithAuth(authId: string): Observable<AppUser> {
+  getUserWithAuth(authId: string, expanded:boolean=true): Observable<AppUser> {
     return this.http
-      .get<AppUser>(`${env.apiUri}/users/auth/${authId}`)
+      .get<AppUser>(`${env.apiUri}/users/auth/${authId}?expanded=${expanded}`)
       .pipe(
         map((res:any) => res.data)
       );;

@@ -1,0 +1,78 @@
+@use "sass:map";
+@use "@angular/material" as mat;
+
+@mixin speed-dial-component-theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  $primary-palette: map.get($color-config, "primary");
+  $accent-palette: map.get($color-config, "accent");
+  $warn-palette: map.get($color-config, "warn");
+  $is-dark-theme: map.get($color-config, "is-dark");
+
+  @if $is-dark-theme {
+    .fab-toggler {
+      background-color: mat.get-color-from-palette(
+        $accent-palette,
+        700
+      ) !important;
+    }
+    .fab-secondary {
+      background-color: mat.get-color-from-palette($accent-palette) !important;
+      color: mat.get-color-from-palette(
+        $accent-palette,
+        default-contrast
+      ) !important;
+    }
+  } @else {
+    .fab-toggler {
+      background-color: mat.get-color-from-palette(
+        $accent-palette,
+        700
+      ) !important;
+    }
+    .fab-secondary {
+      color: mat.get-color-from-palette(
+        $accent-palette,
+        default-contrast
+      ) !important;
+      background-color: mat.get-color-from-palette(
+        $accent-palette,
+        300
+      ) !important;
+    }
+  }
+}
+
+.fab-container {
+  position: fixed;
+  bottom: 1.3em;
+  right: 1.3em;
+  z-index: 100;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+
+  > div {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    margin-bottom: 5px;
+
+    button {
+      margin-bottom: 1em;
+    }
+  }
+}
+
+.fab-toggler {
+  float: right;
+  z-index: 110;
+}
+
+#fab-dismiss {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+}

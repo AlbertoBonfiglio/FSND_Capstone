@@ -1,11 +1,10 @@
-import { User as Auth0User } from "@auth0/auth0-spa-js";
+import { AppRobot } from "../../models/robot.model";
+import { AppUser } from "../../models/user.model";
 
-export interface AuthState {
-  user: Auth0User | null;
-  appData: {} | null;
+export interface UserState {
+  appUser: AppUser | null;
 }
 
-export const initialAuthState: AuthState = {
-  user: null,
-  appData: null,
+export const initialUserState: UserState = {
+  appUser: null
 };
