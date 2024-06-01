@@ -1,18 +1,25 @@
 import { Component, Input } from '@angular/core';
 import { AppState } from '../../../core/store/core.state';
 import { Store } from '@ngrx/store';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, map, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { selectedRobot } from '../../../core/store';
+import { AppRobot } from '../../../core/models/robot.model';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 const dependencies = [
   CommonModule,
   MatCardModule,
   MatButtonModule,
-  MatIconModule
+  MatIconModule,
+  FormsModule, 
+  MatFormFieldModule, 
+  MatInputModule
 ];
 
 @Component({
@@ -38,9 +45,23 @@ export class RobotScreenComponent {
       tap((robot) => console.log('Found:', robot))
     );
 
-  constructor(
-    private store: Store<AppState> 
-  ) {}
+  public robotData$: Observable<{
+    robot: AppRobot|null,
+    isEdit: boolean
+  }>;
+
+  constructor(private store: Store<AppState>) {
+     this.robotData$ = combineLatest([this.robot$, this.isEdit$])
+      .pipe(
+        map(([robot, isEdit]) => {
+          return {
+              robot, 
+              isEdit
+            }
+        }),
+        tap((v) => console.log(v))
+    );
+  }
 
   ngOnInit  () {
 
