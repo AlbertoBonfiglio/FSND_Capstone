@@ -33,7 +33,14 @@ The following provides detailed documentation of the backend API endpoints inclu
 - Queries the system to ensure it's operational
 - Request Arguments: None
 - Usage example: `http[s]://<HOST>/status`
-- Returns: A status of 200 and a json payload of 'ready' if operational.
+- Returns: A status of 200 and a json payload with service status and version number
+  
+  ```json
+    {
+      "status": "healthy",
+      "version": "1.0.1"
+    }
+  ```
 
 #### `GET 'http[s]://<HOST>users'`
 
