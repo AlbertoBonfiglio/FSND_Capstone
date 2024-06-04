@@ -16,3 +16,7 @@
 .logo-text {
   font-family: $ps2p-regular;
 }
+
+app-theme-toggler, .mat-mdc-icon-button {
+  margin-left: 0em!important;
+}

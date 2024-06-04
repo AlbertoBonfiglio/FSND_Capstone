@@ -18,7 +18,6 @@ const dependencies = [
   MatIconModule,
   MatCardModule,
   MatButtonModule,
-  //MatSnackBarModule,
 ];
 
 

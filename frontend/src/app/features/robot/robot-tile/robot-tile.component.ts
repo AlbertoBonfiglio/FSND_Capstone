@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AppRobot } from '../../../core/models/robot.model';
 import { CommonModule } from '@angular/common';
@@ -12,7 +12,6 @@ import { getRandomIntInclusive } from '../../../core/utils';
     CommonModule,
     MatButtonModule,
     MatIconModule
-
   ],
   templateUrl: './robot-tile.component.html',
   styleUrl: './robot-tile.component.scss'

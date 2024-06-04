@@ -9,16 +9,23 @@ import { CommonModule } from '@angular/common';
 import { Observable, combineLatest, map, tap } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterModule } from '@angular/router';
+import { ThemeTogglerComponent } from '../../../components';
+
+const dependencies = [
+  CommonModule,
+  RouterModule,
+  MatIconModule,
+  MatToolbarModule,
+  MatButtonModule,
+  ThemeTogglerComponent
+]
 
 @Component({
   selector: 'app-home-navbar',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatToolbarModule,
-    MatButtonModule
+    dependencies
+    
   ],
   templateUrl: './home-navbar.component.html',
   styleUrl: './home-navbar.component.scss'

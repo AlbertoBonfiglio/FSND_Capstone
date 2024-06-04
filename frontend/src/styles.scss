@@ -1,153 +1,262 @@
 /* You can add global styles to this file, and also import other style files */
+@use 'sass:map';
 @use '@angular/material' as mat;
-
 @include mat.core();
 
-html, body { height: 100%; width: 100%;}
-body { 
-  margin: 0; 
-  font-family: Roboto, "Helvetica Neue", sans-serif; 
-  background-color: #ece0ca;
-  display: -webkit-flex;
-  display: flex;
- }
- 
- $ps2p-regular: "Press Start 2P", system-ui;
- $shadow-color: rgb(77, 23, 21);
- $font-color: rgb(83, 0, 7); 
+$app-palette: mat.$brown-palette;
+$acc-palette: mat.$purple-palette;
 
- app-root {
-   display: flex;
-   flex: 0 0 100% !important;
-   flex-direction: column;
- 
-  .ctr { display: -webkit-flex;
-      display: flex;
-      flex-direction: column;
-      -webkit-align-items: center;
-      align-items: center;
-      -webkit-justify-content: center;
-      justify-content: center;
-      align-self: center;
+$background: null;
+$background-color: null;
+
+$dark-theme: mat.define-dark-theme((
+  color: (
+    primary: mat.define-palette($app-palette, 600),
+    accent: mat.define-palette($acc-palette, A200, A100, A400),
+  ),
+  // Only include `typography` and `density` in the default dark theme.
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Define a light theme
+$light-theme: mat.define-light-theme(
+  (color: (
+    primary: mat.define-palette($app-palette, 600),
+    accent: mat.define-palette($acc-palette, A200, A100, A400),
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+@mixin custom-components-theme($theme) {
+  // Apply the dark theme by default
+  @include mat.core-theme($theme);
+  @include mat.button-theme($theme);
+  @include mat.card-theme($theme);
+  @include mat.list-theme($theme);
+  @include mat.icon-theme($theme);
+  @include mat.icon-button-theme($theme);
+  @include mat.toolbar-theme($theme);
+  @include mat.fab-theme($theme);
+  @include mat.ripple-theme($theme);
+  @include mat.snack-bar-theme($theme);
+  @include mat.input-theme($theme);
+  @include mat.form-field-theme($theme);
+
+  @include custom-background-color($theme);
+}
+
+
+@mixin custom-components-color($theme) {
+  // Apply the dark theme by default
+  @include mat.core-color($theme);
+  @include mat.button-color($theme);
+  @include mat.card-color($theme);
+  @include mat.list-color($theme);
+  @include mat.icon-color($theme);
+  @include mat.icon-button-color($theme);
+  @include mat.toolbar-color($theme);
+  @include mat.fab-color($theme);
+  @include mat.ripple-color($theme);
+  @include mat.snack-bar-color($theme);
+  @include mat.input-color($theme);
+  @include mat.form-field-color($theme);
+
+  @include custom-background-color($theme);
+}
+
+
+@mixin custom-background-color($theme) {
+  $color-config: mat.get-color-config($theme);
+  $is-dark-theme: map.get($color-config, "is-dark");
+
+  @if $is-dark-theme {
+    $background: map-get($dark-theme, background) !global;
+  } @else {
+    $background: map-get($light-theme, background) !global;
+  }
+  $background-color: map-get($background, background) !global;
+  @debug $background-color; // #fafafa    
+}
+
+
+html, body {
+  height: 100%;
+  width: 100%;
+  // make dark by default
+  @include custom-components-theme($dark-theme);
+    
+  .dark {
+    @include custom-components-color($dark-theme);
+  }
+
+  .light {
+    @include custom-components-color($light-theme);
+  }
+
+  .system {
+    // Apply the light theme only when the user prefers light themes.
+    @media (prefers-color-scheme: light) {
+    // Use the `-color` mixins to only apply color styles without reapplying the same
+    // typography and density styles.
+      @include custom-components-color($light-theme);
+      //$background-color: green !global;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      // Use the `-color` mixins to only apply color styles without reapplying the same
+      // typography and density styles.
+      @include custom-components-color($dark-theme);
+    }
+  } 
+
+  body { 
+    margin: 0; 
+    font-family: Roboto, "Helvetica Neue", sans-serif; 
+    background-color:$background-color!important;
+    display: -webkit-flex;
+    display: flex;
+  }
+  
+  $ps2p-regular: "Press Start 2P", system-ui;
+  $shadow-color: rgb(77, 23, 21);
+  $font-color: rgb(83, 0, 7); 
+
+  app-root {
+    display: flex;
+    flex: 0 0 100% !important;
+    flex-direction: column;
+  
+    .ctr { display: -webkit-flex;
+        display: flex;
+        flex-direction: column;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        align-self: center;
+        margin-top: auto;
+        margin-bottom: auto;
+    
+      span { 
+        margin-top: 1rem;
+        font-family: $ps2p-regular;
+        font-weight: 400;
+        font-style: normal;
+        font-size: 1.6rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-align: center;
+        line-height: 2rem;
+        color: $font-color;
+      }
+    }
+
+
+    .splash {
+      width: 35vw;
+      height: 35vw;
+      min-width: 300px;
+      min-height: 300px;
       margin-top: auto;
       margin-bottom: auto;
-  
-    span { 
-      margin-top: 1rem;
-      font-family: $ps2p-regular;
-      font-weight: 400;
-      font-style: normal;
-      font-size: 1.6rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      line-height: 2rem;
-      color: $font-color;
-    }
-  }
-
-
-  .splash {
-    width: 35vw;
-    height: 35vw;
-    min-width: 300px;
-    min-height: 300px;
-    margin-top: auto;
-    margin-bottom: auto;
-    margin-left: auto;
-    margin-right: auto;
-    //background: #333;
-    padding: 2px;
-    border-radius: 50%;
-   
-    img {
+      margin-left: auto;
+      margin-right: auto;
+      //background: #333;
+      padding: 2px;
       border-radius: 50%;
-      width: 100%;  
-      height: 100%; 
-      //box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  .pulse {
-    cursor: pointer;
-    box-shadow: 0 0 0 rgba($shadow-color, 0.4);
-    animation: pulse 2s infinite;
-  }
-
-  .pulse-text {
-    cursor: pointer;
-    animation: pulse-text 2s infinite;
-  }
-
-  .pulse:hover {
-    animation: none;
-  }
-
-
-  @-webkit-keyframes pulse {
-    0% {
-      -webkit-box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+    
+      img {
+        border-radius: 50%;
+        width: 100%;  
+        height: 100%; 
+        //box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+      }
     }
 
-    70% {
-      -webkit-box-shadow: 0 0 0 10px rgba($shadow-color, 0);
+    .pulse {
+      cursor: pointer;
+      box-shadow: 0 0 0 rgba($shadow-color, 0.4);
+      animation: pulse 2s infinite;
     }
 
-    100% {
-      -webkit-box-shadow: 0 0 0 0 rgba($shadow-color, 0);
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      -moz-box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
-      box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+    .pulse-text {
+      cursor: pointer;
+      animation: pulse-text 2s infinite;
     }
 
-    70% {
-      -moz-box-shadow: 0 0 0 10px rgba($shadow-color, 0);
-      box-shadow: 0 0 0 10px rgba($shadow-color, 0);
+    .pulse:hover {
+      animation: none;
     }
 
-    100% {
-      -moz-box-shadow: 0 0 0 0 rgba($shadow-color, 0);
-      box-shadow: 0 0 0 0 rgba($shadow-color, 0);
-    }
-  }
 
-  @-webkit-keyframes pulse-text{
+    @-webkit-keyframes pulse {
       0% {
-        -webkit-text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+        -webkit-box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
       }
 
       70% {
-        -webkit-text-shadow: 0 0 0 10px rgba($shadow-color, 0);
+        -webkit-box-shadow: 0 0 0 10px rgba($shadow-color, 0);
       }
 
       100% {
-        -webkit-text-shadow: 0 0 0 0 rgba($shadow-color, 0);
+        -webkit-box-shadow: 0 0 0 0 rgba($shadow-color, 0);
       }
     }
 
-    @keyframes pulse-text {
+    @keyframes pulse {
       0% {
-        -moz-text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
-        text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+        -moz-box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+        box-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
       }
 
       70% {
-        -moz-text-shadow: 0 0 0 10px rgba($shadow-color, 0);
-        text-shadow: 0 0 0 10px rgba($shadow-color, 0);
+        -moz-box-shadow: 0 0 0 10px rgba($shadow-color, 0);
+        box-shadow: 0 0 0 10px rgba($shadow-color, 0);
       }
 
       100% {
-        -moz-text-shadow: 0 0 0 0 rgba($shadow-color, 0);
-        text-shadow: 0 0 0 0 rgba($shadow-color, 0);
+        -moz-box-shadow: 0 0 0 0 rgba($shadow-color, 0);
+        box-shadow: 0 0 0 0 rgba($shadow-color, 0);
       }
     }
-}
- 
 
-.flex-spacer {
-  flex: 1 1 auto;
+    @-webkit-keyframes pulse-text{
+        0% {
+          -webkit-text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+        }
+
+        70% {
+          -webkit-text-shadow: 0 0 0 10px rgba($shadow-color, 0);
+        }
+
+        100% {
+          -webkit-text-shadow: 0 0 0 0 rgba($shadow-color, 0);
+        }
+      }
+
+      @keyframes pulse-text {
+        0% {
+          -moz-text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+          text-shadow: 0 0 0 0 rgba($shadow-color, 0.4);
+        }
+
+        70% {
+          -moz-text-shadow: 0 0 0 10px rgba($shadow-color, 0);
+          text-shadow: 0 0 0 10px rgba($shadow-color, 0);
+        }
+
+        100% {
+          -moz-text-shadow: 0 0 0 0 rgba($shadow-color, 0);
+          text-shadow: 0 0 0 0 rgba($shadow-color, 0);
+        }
+      }
+  }
+  
+
+  .flex-spacer {
+    flex: 1 1 auto;
+  }
+
 }
