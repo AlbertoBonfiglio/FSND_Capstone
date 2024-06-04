@@ -9,6 +9,7 @@ from database.models.user import User
 from utils import isNoneOrEmpty
 from flask import request
 from config import Config
+
 '''
     The Auth module exposes flask decorators that are responsible for 
     authentication and authorization 
