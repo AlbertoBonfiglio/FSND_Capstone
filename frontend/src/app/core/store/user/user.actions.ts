@@ -19,7 +19,7 @@ export const createDefaultAppUserData = createAction(
 
 export const defaultAppUserDataCreated = createAction(
   "[User] Default User App Data Loaded",
-  props<{ data: AppUser|null }>()
+  props<{ data: AppUser }>()
 );
 
 export const editAppUserData = createAction(
@@ -33,6 +33,23 @@ export const saveAppUserData = createAction(
 );
 
 export const saveAppUserDataSuccess = createAction(
-  "[User] Upsert user data",
-  props<{ data: AppUser|null }>()
+  "[User] Upsert data",
+  props<{ data: AppUser }>()
+);
+
+export const cancelEditAppUserData = createAction("[User] Cancel edit user data");
+
+export const createAppUserAPIKey = createAction(
+  "[User] Create API Key",
+  (userId: string) => ({userId})
+);
+
+export const createAppUserAPIKeySuccess = createAction(
+  "[User] API key success",
+  props<{ data: AppUser }>()
+);
+
+export const databaseError = createAction(
+  "[User] Database Error",
+  props<{ error: any }>()
 );

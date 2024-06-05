@@ -1,3 +1,56 @@
-mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
-  justify-content: end;
+div.container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  justify-content: center;
+  align-items: center;
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em;
+  
+    mat-card {
+      width: 95vw;
+      max-width: 980px;
+    
+      mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
+        justify-content: end;
+        padding-right: 1em;
+        padding-bottom: 1em;
+      }
+      
+      
+      .mat-mdc-form-field {
+          width: 100%;
+      }
+
+      div.row {
+        display: flex;
+        flex:1 1 auto;
+        flex-direction: column;
+
+        @media only screen and (min-width:500px) {
+          flex-direction: row;
+        }
+        
+      }
+
+      div.row.no-wrap{
+        //align-items: center;
+        justify-content: space-between;
+        flex-direction: row;
+
+        button {
+          margin-top: 0.9em;
+        }
+
+      }
+    }
+
+    .spacer {
+      min-width: 1em;
+    }
+    
+  }
 }

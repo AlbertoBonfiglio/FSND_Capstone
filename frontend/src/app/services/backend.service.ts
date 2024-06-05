@@ -18,7 +18,7 @@ export class BackendService {
       .get<AppUser>(`${env.apiUri}/users/${userId}?expanded=${expanded}`)
       .pipe(
         map((res:any) => res.data)
-      );;
+      );
   }
 
   getUsers(expanded:boolean=true): Observable<AppUser[]> {
@@ -45,10 +45,10 @@ export class BackendService {
       );;
   }
 
-  patchUser(id: string, values:any = {}): Observable<AppUser> {
+  patchUser(user: AppUser): Observable<AppUser> {
     //TODO [] Check that bad values are not passed
     return this.http
-      .patch<AppUser>(`${env.apiUri}/users/${id}`, values)
+      .patch<AppUser>(`${env.apiUri}/users/${user.id}`, user)
       .pipe(
         map((res:any) => res.data)
       );
