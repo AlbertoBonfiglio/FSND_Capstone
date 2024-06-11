@@ -3,7 +3,7 @@ import { AppState } from '@auth0/auth0-angular';
 import { Store } from '@ngrx/store';
 import { cancelEditAppUserData, createAppUserAPIKey, saveAppUserData, selectUser } from '../../../core/store';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder} from '@angular/forms';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators} from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,7 @@ import { MatFormFieldModule} from '@angular/material/form-field';
 import { BehaviorSubject, Subject, distinctUntilChanged, takeUntil, tap } from 'rxjs';
 import { AppUser } from '../../../core/models/user.model';
 import { Language, Status, Theme } from '../../../core/enums';
+import { PrefsPanelComponent } from '../../../components/prefs-panel/prefs-panel.component';
 
 const dependencies = [
   CommonModule,
@@ -21,6 +22,7 @@ const dependencies = [
   MatButtonModule,
   MatFormFieldModule, 
   MatInputModule,
+  PrefsPanelComponent,
 ]
 
 @Component({
@@ -32,20 +34,23 @@ const dependencies = [
 })
 export class UserScreenComponent {
   private ngUnsubscribe = new Subject<void>();
+  private user$ = this.store.select(selectUser);
   public selectedUser$ : BehaviorSubject<AppUser|null> = new BehaviorSubject<AppUser|null>(null); 
-  user$ = this.store.select(selectUser);
-
-  profileForm = this.fb.group({
-    id: [''],
+  
+  public profileForm = this.fb.group({
+    id: ['', []],
     auth_id: [''],
-    name: [''],
-    email: [''],
-    api_key: [''],
+    name: ['', [Validators.required]],
+    email: ['', [Validators.required, Validators.email]],
+    api_key: ['', []],
+    preferences: ['', []],
+    /*
     preferences: this.fb.group({
-      theme: [Theme.system],
-      language: [Language.system],
+      theme: [Theme.system, [Validators.required]],
+      language: [Language.system, [Validators.required]],
     }),
-    robots: [-1],
+    */
+    robots: [-1, []],
     status: [Status.active] 
   });
 
@@ -59,25 +64,14 @@ export class UserScreenComponent {
       distinctUntilChanged(),
       tap((value) => console.log(value)),
       tap((user) => this.selectedUser$.next(user)),
-      tap((user) => this.profileForm = this.updateFormGroup(user!)),
+      tap((user) => this.patchFormGroup(user!)),
     )
     .subscribe();
   }
 
-  private updateFormGroup(user: AppUser )  {
-    return this.fb.group({
-      id: [user.id ?? ''],
-      auth_id: [user.auth_id ?? ''],
-      name: [user.name ?? ''],
-      email: [user.email  ?? ''],
-      api_key: [user.api_key ?? ''],
-      preferences: this.fb.group({
-        theme: [user.preferences.theme ?? Theme.system],
-        language: [user.preferences.language ?? Language.system],
-      }),
-      robots: [-1], // it's ignored
-      status: [user.status ?? Status.active] 
-    });
+  private patchFormGroup(user: AppUser) {
+    const json = JSON.parse(JSON.stringify(user));
+    this.profileForm.patchValue(json);
   }
   
   public canSave(): boolean {
@@ -95,7 +89,6 @@ export class UserScreenComponent {
   onCancel(){
     this.store.dispatch(cancelEditAppUserData());
   }
-
 
   public ngOnDestroy(): void {
     this.ngUnsubscribe.next();

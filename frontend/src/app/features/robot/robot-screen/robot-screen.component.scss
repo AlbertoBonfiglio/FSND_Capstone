@@ -5,20 +5,21 @@ div.container {
   justify-content: center;
   align-items: center;
 
-  mat-card {
-    width: 95vw;
-    max-width: 980px;
+  form {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em;
 
-    mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
-      justify-content: end;
-      padding-right: 1em;
-      padding-bottom: 1em;
-    }
+    mat-card {
+      width: 95vw;
+      max-width: 980px;
 
-    form {
-      display: flex;
-      flex-direction: column;
-      margin-top: 1em;
+      mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
+        justify-content: end;
+        padding-right: 1em;
+        padding-bottom: 1em;
+      }
+
 
       .mat-mdc-form-field {
         width: 100%;
@@ -44,14 +45,12 @@ div.container {
           margin-top: 0.9em;
         }
 
-        .spacer {
-          min-width: 1em;
-        }
       }
     }
 
     .spacer {
       min-width: 1em;
     }
+
   }
 }

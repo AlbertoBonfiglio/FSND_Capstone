@@ -1,4 +1,5 @@
 import { Language, Status, Theme } from "../enums";
+import { Preference } from "./preferences.model";
 import { AppRobot } from "./robot.model";
 
 export class AppUser {
@@ -7,23 +8,45 @@ export class AppUser {
   name: string = 'Unknown User';
   email: string  = '';
   api_key: string  = '';
-  preferences: AppUserPrefs = new AppUserPrefs()
+  preferences: Preference[] = []
   robots: AppRobot[] | number = 0
   status: Status = Status.active; 
 
-  constructor(auth_id:string, name: string, email:string ){
+  constructor(
+    id: string = '', 
+    auth_id:string = '', 
+    name: string = '', 
+    email:string = '', 
+    prefs: Preference[] = [], 
+    api_key: string  = '', 
+    robots: AppRobot[] | number = 0,
+    status: Status = Status.active, 
+  ){
+    this.id = id
     this.auth_id = auth_id
     this.name = name;
     this.email = email;
+    this.api_key= api_key;
+    this.preferences = this.initPrefs( prefs );
+    this.status = status;
+    this.robots = robots;
   }
+
+  private initPrefs (prefs: Preference[]): Preference[] {
+    if (prefs.length > 2) { 
+      return prefs;
+    }
+    let value = [];
+    value.push(new Preference('theme', Theme.system, true)); // if required cannot be deleted
+    value.push(new Preference('language', Language.system, true)); 
+    return value;
+  } 
 
   static UserFactory(auth_id:string, name: string, email:string ) {
     return new AppUser(auth_id, name, email);
-
   }
-}
 
-export class AppUserPrefs {
-  theme: Theme = Theme.system;
-  language: Language = Language.system;
+  static romJson(json:string ): AppUser {
+    throw new Error("Not Implemented yet");
+  }
 }

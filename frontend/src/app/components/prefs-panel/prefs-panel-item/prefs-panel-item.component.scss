@@ -1,0 +1,36 @@
+:host {
+  width: 100%;
+ }
+
+.mat-mdc-list-item { 
+  padding-right: 0;;
+
+  mat-card {
+    width: 100% !important;
+    padding-left: 0px!important;
+    padding-right: 0px !important;
+
+    .mat-mdc-card-content{
+      display: flex;
+      flex-direction: row;
+      margin-left: 0px !important;
+      margin-right: 0px !important;
+      padding-left: 0px !important;
+      padding-right: 0px !important;
+
+      .content{
+        flex: 1 1 auto;;      
+      }
+      .action{
+        margin-left: 1em;
+      }
+    }
+
+    mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
+      justify-content: end;
+      padding-right: 1em;
+      padding-bottom: 1em;
+    }
+
+  }
+}

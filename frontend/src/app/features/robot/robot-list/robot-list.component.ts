@@ -66,14 +66,14 @@ export class RobotListComponent {
     this.store.dispatch(addUserRobot())
   }
   
-  public onEditRobot(event:any) {
-    console.log(event)
-    this.store.dispatch(editUserRobot({robotId: event}));
+  public onEditRobot(robot: AppRobot) {
+    console.log('onEdit', robot)
+    this.store.dispatch(editUserRobot({robot: robot}));
   }
 
 
-  public onDeleteRobot(event: any) {
-    this.store.dispatch(deleteUserRobot({robotId: event}))
+  public onDeleteRobot(robot: AppRobot) {
+    this.store.dispatch(deleteUserRobot({robot: robot}))
   }
 
 }

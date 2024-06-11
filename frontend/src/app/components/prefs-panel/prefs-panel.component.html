@@ -1,0 +1,25 @@
+    <mat-card class="">
+      <mat-card-header>
+        <mat-card-title>Preferences</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <mat-list>
+          @for (ctrl of this.preferences$|async; track ctrl ){
+            <app-prefs-panel-item 
+              [value]="ctrl"
+              (onClickEvent)="onItemClick($event)"
+            />
+          }
+        </mat-list>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button type="button" 
+          mat-raised-button 
+          color="primary" 
+          (click)="upsertPreference(undefined)">
+          Add New
+        </button>
+      </mat-card-actions>
+    </mat-card>

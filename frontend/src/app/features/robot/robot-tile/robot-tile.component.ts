@@ -20,23 +20,25 @@ export class RobotTileComponent {
 
   @Input() robot?: AppRobot;
 
-  @Output() editClick = new EventEmitter<string>();
-  @Output() deleteClick = new EventEmitter<string>();
+  @Output() editClick = new EventEmitter<AppRobot>();
+  @Output() deleteClick = new EventEmitter<AppRobot>();
 
   getAvatar(): string {
+    console.log('random:', this.robot)
     const num =  getRandomIntInclusive(1,8);  
-    console.log('random:', num)
-    const avatar: string = this.robot?.preferences.avatar ?? `00${num}-robot.png`; 
+    const avatar = this.robot?.preferences?.find(x => x.key === 'avatar')?.value ?? `00${num}-robot.png`
+    console.log('random:', num, avatar)
+    //const avatar: string = '' //this.robot?.preferences.avatar ?? `00${num}-robot.png`; 
     return `/assets/png/${avatar}`;
   }
 
   onEditClick(event:any) {
-    this.editClick.emit(this.robot?.id)
+    this.editClick.emit(this.robot)
    // event.stopPropagation();
   }
 
   onDeleteClick(event:any) {
-    this.deleteClick.emit(this.robot?.id)
+    this.deleteClick.emit(this.robot)
     //event.stopPropagation();
   }
 }

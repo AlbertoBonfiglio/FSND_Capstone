@@ -45,6 +45,11 @@
             </button>
           </div>
   
+          <div class="row">
+            <app-prefs-panel formControlName="preferences"></app-prefs-panel>
+          </div>
+
+
       </mat-card-content>
       <mat-card-actions>
         <button 
@@ -65,4 +70,7 @@
     </mat-card>
 </form>
 
+  <div>
+    {{this.profileForm.value.preferences | json}}
+  </div>
 </div>

@@ -1,13 +1,13 @@
 import { Injectable } from "@angular/core";
-import { AppState } from "@auth0/auth0-angular";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { map, of, switchMap} from "rxjs";
+import { map, of, switchMap, tap} from "rxjs";
 import * as RobotActions from "./robot.actions";
 import { BackendService } from "../../../services/backend.service";
 import { Store } from "@ngrx/store";
 import { Router } from "@angular/router";
 import { MatSnackBar } from "@angular/material/snack-bar";
 import { AppRobot } from "../../models/robot.model";
+import { AppState } from "../core.state";
 
 
 @Injectable()
@@ -21,7 +21,7 @@ export class RobotEffects {
   ) {}
 
   
- addUserRobot$ = createEffect(
+  addUserRobot$ = createEffect(
     () => this.actions$.
       pipe(
         ofType(RobotActions.addUserRobot.type),
@@ -38,7 +38,11 @@ export class RobotEffects {
     () => this.actions$.
       pipe(
         ofType(RobotActions.editUserRobot.type),
-        map((action) => this.router.navigate(["/home/robots", action.robotId, "details" ])),
+        switchMap((action) => {
+          this.store.dispatch(RobotActions.setSelectedRobot({data: action.robot}));
+          return of(action.robot);
+        }),
+        map((robot) => this.router.navigate(["/home/robots", robot.id, "details" ])),
       ),
     { dispatch: false }
   );
@@ -48,7 +52,11 @@ export class RobotEffects {
     () => this.actions$.
       pipe(
         ofType(RobotActions.deleteUserRobot.type),
-        map((id) => this.snack.open(`Not implemented yet`, '',  { duration: 3000 } )),
+        switchMap((action) => {
+          this.store.dispatch(RobotActions.setSelectedRobot({data: action.robot}));
+          return of(action.robot);
+        }),
+        map(() => this.snack.open(`Not implemented yet`, '',  { duration: 3000 } )),
       ),
     { dispatch: false }
   );

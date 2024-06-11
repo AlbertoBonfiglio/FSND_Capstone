@@ -1,52 +1,48 @@
 <div class="container">
-  <mat-card class="robots">
-    <mat-card-header>
-      <mat-card-title>
-        @if (isEdit$|async) {
-          Edit Robot
-        } @else {
-          Add New Robot
-        }
-      </mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-        <form class="example-form">
+  <form [formGroup]="robotForm" (ngSubmit)="onSubmit(robotForm)">
+    <mat-card class="robots">
+      @if (robotData$|async; as data) {
+      <mat-card-header>
+        <mat-card-title>
+          @if (data.isEdit) {
+            Edit Robot
+          } @else {
+            Add New Robot
+          }
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+          
+        <div class="row">
           <mat-form-field class="example-full-width">
-            <mat-label>Company (disabled)</mat-label>
-            <input matInput disabled value="Google">
+            <mat-label>Name</mat-label>
+            <input matInput value="Enter the name..." 
+              formControlName="name" required />
           </mat-form-field>
+        </div>
         
-          <table class="example-full-width" cellspacing="0">
-            <tr>
-              <td><mat-form-field class="example-full-width">
-                  <mat-label>First name</mat-label>
-                  <input matInput>
-                </mat-form-field></td>
-              <td><mat-form-field class="example-full-width">
-                  <mat-label>Long Last Name That Will Be Truncated</mat-label>
-                  <input matInput>
-                </mat-form-field></td>
-            </tr>
-          </table>
-        
-          <p>
-            <mat-form-field class="example-full-width">
-              <mat-label>Address</mat-label>
-              <textarea matInput placeholder="Ex. 100 Main St">1600 Amphitheatre Pkwy</textarea>
-            </mat-form-field>
-            <mat-form-field class="example-full-width">
-              <mat-label>Address 2</mat-label>
-              <textarea matInput></textarea>
-            </mat-form-field>
-          </p>
-                  
-        </form>
-    </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary">Save</button>
-      <div class="spacer"></div>
-      <button mat-raised-button color="primary">Cancel</button>
-    </mat-card-actions>
-  </mat-card>
+        <div class="row">
+          <mat-form-field class="example-full-width">
+            <mat-label>MAC</mat-label>
+            <input matInput value="Enter the MAC address..." 
+            formControlName="mac" />
+          </mat-form-field>
+        </div>
+                
+        <div class="row">
+          <app-prefs-panel formControlName="preferences"></app-prefs-panel>
+        </div>
 
+        </mat-card-content>
+        <mat-card-actions>
+          <button type="button" mat-raised-button color="primary" (click)="onCancel()">
+            Cancel
+          </button>
+          <div class="spacer"></div>
+          <button type="submit" mat-raised-button [disabled]="!canSave()" color="primary">Save
+          </button>
+        </mat-card-actions>
+      }
+    </mat-card>
+  </form>
 </div>

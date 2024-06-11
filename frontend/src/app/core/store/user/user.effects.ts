@@ -7,9 +7,9 @@ import { Store } from "@ngrx/store";
 import { AppUser } from "../../models/user.model";
 import * as actions from "./user.actions";
 import { allAuthActions } from "../auth/auth.actions";
-import { MatSnackBar } from "@angular/material/snack-bar";
 import { Router } from "@angular/router";
 import { selectAuthUser } from "../auth/auth.selectors";
+import { SnackbarService } from "../../../services/snackbar.service";
 
 
 @Injectable()
@@ -19,7 +19,7 @@ export class UserEffects {
     private dataService: BackendService,
     private store: Store<AppState>,
     private router: Router,
-     private snack: MatSnackBar
+     private snack: SnackbarService
   ) {}
 
   
@@ -87,7 +87,7 @@ export class UserEffects {
     () => this.actions$.
       pipe(
         ofType(actions.cancelEditAppUserData),
-        map((action) => this.router.navigate(["/home"])),
+        map(() => this.router.navigate(["/home"])),
        ),
     { dispatch: false }
   );
@@ -130,7 +130,7 @@ export class UserEffects {
         ofType(actions.saveAppUserDataSuccess.type),
         withLatestFrom(this.store.select(selectAuthUser)),
         map(([action, user]) => this.store.dispatch(actions.loadAppUserData({data: user}))),
-        tap(() => this.snack.open('Operation completed successfully')),
+        tap(() => this.snack.info('Operation completed successfully')),
       ),
     { dispatch: false }
   );
