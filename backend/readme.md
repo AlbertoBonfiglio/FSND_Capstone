@@ -23,7 +23,7 @@
 
 ### Live site
 
-A sample of the API can be accessed on [Render](https://fsnd-capstone-711w.onrender.com)
+A sample of the API can be accessed on [Render](https://fsnd-capstone-711w.onrender.com/status)
 
 ### Installing Dependencies
 
