@@ -15,8 +15,14 @@ const dependencies = [
 ];
 
 export enum Operation {
+  add,
   edit,
   delete,
+}
+
+export type PrefAction = {
+  pref: Preference|undefined;
+  ops: Operation  
 }
 
 @Component({
@@ -29,13 +35,23 @@ export enum Operation {
   
 })
 export class PrefsPanelItemComponent {
-  @Input() value: Preference|null = null;
+  @Input() value: Preference|undefined = undefined;
 
   onClickEvent = output<{}>()
 
   onEdit() {
-    this.onClickEvent.emit({
-      type: Operation.edit,
-      item: this.value});
+    let action: PrefAction = {
+      pref: this.value,
+      ops: Operation.edit
+    }
+    this.onClickEvent.emit(action);  
+  } 
+
+  onDelete() {
+    let action: PrefAction = {
+      pref: this.value,
+      ops: Operation.delete
+    }
+    this.onClickEvent.emit(action);
   } 
 }

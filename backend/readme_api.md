@@ -64,13 +64,10 @@ The following provides detailed documentation of the backend API endpoints inclu
         "email": "name@domain.com",
         "id": "8f6df43a-8699-4cca-97f4-d0f66dc49291",
         "name": "Beardo",
-        "preferences": {
-            "complaining": false,
-            "dancing": [
-                "2 left feet",
-                "limpada"
-            ]
-        },
+        "preferences": [
+            {"key": "theme", "value": "light", "required": true },
+            {"key": "language", "value": "system", "required": true }
+        ],
         "robots": 1,
         "status": "active"
       },
@@ -98,13 +95,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "email": "name@domain.com",
       "id": "8f6df43a-8699-4cca-97f4-d0f66dc49291",
       "name": "Beardo",
-      "preferences": {
-          "complaining": false,
-          "dancing": [
-              "2 left feet",
-              "limpada"
-          ]
-      },
+      "preferences": [
+        {"key": "theme", "value": "light", "required": true },
+        {"key": "language", "value": "system", "required": true }
+    ],
       "robots": 1,
       "status": "active"
     },
@@ -130,13 +124,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "email": "name@domain.com",
       "id": "8f6df43a-8699-4cca-97f4-d0f66dc49291",
       "name": "Beardo",
-      "preferences": {
-          "complaining": false,
-          "dancing": [
-              "2 left feet",
-              "limpada"
-          ]
-      },
+      "preferences": [
+        {"key": "theme", "value": "light", "required": true },
+        {"key": "language", "value": "system", "required": true }
+      ],
       "robots": 1,
       "status": "active"
     },
@@ -157,10 +148,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "auth_id": "auth0|6639fe49ba5b6aa80cd41f1a",
       "email": "pparker@daily-bugle.com",
       "name": "Peter Benjamin Parker",
-      "preferences": {
-        "theme": "system",
-        "language": "en-us"
-      },
+      "preferences": [
+        {"key": "theme", "value": "light", "required": true },
+        {"key": "language", "value": "system", "required": true }
+      ],
       "status": "active"
     }
   ```
@@ -175,10 +166,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "auth_id": "auth0|6639fe49ba5b6aa80cd41f1a",
       "email": "pparker@daily-bugle.com",
       "name": "Peter Benjamin Parker",
-      "preferences": {
-        "theme": "system",
-        "language": "en-us"
-      },
+      "preferences": [
+          {"key": "theme", "value": "light", "required": true },
+          {"key": "language", "value": "system", "required": true }
+      ],
       "api_key": "Pism_XIAdU7L7zECR7uJ_g",
       "robots": 1,
       "status": "active"
@@ -199,10 +190,10 @@ The following provides detailed documentation of the backend API endpoints inclu
     {   
       "email": "pparker@daily-bugle.com",
       "name": "Peter Benjamin Parker",
-      "preferences": {
-        "theme": "system",
-        "language": "en-us"
-      },
+      "preferences": [
+          {"key": "theme", "value": "light", "required": true },
+          {"key": "language", "value": "system", "required": true }
+      ],
       "status": "active"
     }
   ```
@@ -217,10 +208,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "auth_id": "auth0|6639fe49ba5b6aa80cd41f1a",
       "email": "pparker@daily-bugle.com",
       "name": "Peter Benjamin Parker",
-      "preferences": {
-        "theme": "system",
-        "language": "en-us"
-      },
+      "preferences": [
+          {"key": "theme", "value": "light", "required": true },
+          {"key": "language", "value": "system", "required": true }
+      ],
       "api_key": "Pism_XIAdU7L7zECR7uJ_g",
       "robots": 1,
       "status": "active"
@@ -245,10 +236,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "auth_id": "auth0|6639fe49ba5b6aa80cd41f1a",
       "email": "pparker@daily-bugle.com",
       "name": "Peter Benjamin Parker",
-      "preferences": {
-        "theme": "system",
-        "language": "en-us"
-      },
+      "preferences": [
+          {"key": "theme", "value": "light", "required": true },
+          {"key": "language", "value": "system", "required": true }
+      ],
       "api_key": "dL6XibXf0e_ug8olVaFUdA",
       "robots": 1,
       "status": "active"
@@ -292,10 +283,10 @@ The following provides detailed documentation of the backend API endpoints inclu
           "id": "73a7a3fd-c11c-4e61-b966-09ab32c79acf",
           "mac": "9C-B6-D0-3E-9A-BA",
           "name": "Robot 1",
-          "preferences": {
-              "roamingDistance": 3,
-              "roamingFrequency": 5
-          },
+          "preferences": [
+            {"key": "roamingDistance", "value": 3, "required": true },
+            {"key": "roamingFrequency", "value": 5, "required": true }
+          ],
           "readings": 1026,
           "status": "active",
           "user_id": "b0e7be71-1a9b-4943-a402-f8f8f1f5f10c"
@@ -319,10 +310,10 @@ The following provides detailed documentation of the backend API endpoints inclu
       "description": "Small arduino tank rover",
       "mac": "9C-B6-D0-3E-9A-BA",
       "name": "Robot 1",
-      "preferences": {
-          "roamingDistance": 3,
-          "roamingFrequency": 5
-      },
+      "preferences": [
+        {"key": "roamingDistance", "value": 3, "required": true },
+        {"key": "roamingFrequency", "value": 5, "required": true }
+      ],
       "status": "active",
       "user_id": "b0e7be71-1a9b-4943-a402-f8f8f1f5f10c"
   }
@@ -338,10 +329,10 @@ The following provides detailed documentation of the backend API endpoints inclu
         "id": "73a7a3fd-c11c-4e61-b966-09ab32c79acf",
         "mac": "9C-B6-D0-3E-9A-BA",
         "name": "Robot 1",
-        "preferences": {
-            "roamingDistance": 3,
-            "roamingFrequency": 5
-        },
+        "preferences": [
+            {"key": "roamingDistance", "value": 3, "required": true },
+            {"key": "roamingFrequency", "value": 5, "required": true }
+        ],
         "readings": 1026,
         "status": "active",
         "user_id": "b0e7be71-1a9b-4943-a402-f8f8f1f5f10c"
@@ -367,10 +358,10 @@ The following provides detailed documentation of the backend API endpoints inclu
     "description": "Small arduino tank rover",
     "mac": "9C-B6-D0-3E-9A-BA",
     "name": "Robot 1",
-    "preferences": {
-        "roamingDistance": 3,
-        "roamingFrequency": 5
-    },
+    "preferences": [
+      {"key": "roamingDistance", "value": 3, "required": true },
+      {"key": "roamingFrequency", "value": 5, "required": true }
+    ],
     "status": "active",
   }
   ```
@@ -384,10 +375,10 @@ The following provides detailed documentation of the backend API endpoints inclu
         "id": "73a7a3fd-c11c-4e61-b966-09ab32c79acf",
         "mac": "9C-B6-D0-3E-9A-BA",
         "name": "Robot 1",
-        "preferences": {
-            "roamingDistance": 3,
-            "roamingFrequency": 5
-        },
+        "preferences": [
+          {"key": "roamingDistance", "value": 3, "required": true },
+          {"key": "roamingFrequency", "value": 5, "required": true }
+        ],
         "readings": 1026,
         "status": "active",
         "user_id": "b0e7be71-1a9b-4943-a402-f8f8f1f5f10c"
@@ -475,12 +466,12 @@ The `iot` endpoints are used by the robots to post readings and retrieve configu
   
   ```json
   {
-      "data": [
-          {   "roaming_frequency": 500 },
-          {   "roaming_distance": 5 },
-          ...
-      ],
-      "success": true
+    "data": [
+        {   "roaming_frequency": 500 },
+        {   "roaming_distance": 5 },
+        ...
+    ],
+    "success": true
   }
   ```
 

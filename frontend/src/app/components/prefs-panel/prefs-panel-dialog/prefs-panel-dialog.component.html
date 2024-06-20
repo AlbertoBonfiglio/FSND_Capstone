@@ -1,32 +1,38 @@
-<mat-card class="">
-  <mat-card-header>
-    <mat-card-title>
-      Preferences
-    </mat-card-title>
-  </mat-card-header>
-  <mat-card-content>
-    <mat-form-field class="example-full-width">
-      <mat-label>Name</mat-label>
-      <input matInput value="Enter your name..." />
-    </mat-form-field>
+<form  [formGroup]="prefsGroup"  (ngSubmit)="submit(prefsGroup)" ngNativeValidate>
+  <mat-card class="">
+    <mat-card-header>
+      <mat-card-title>
+        Preferences
+      </mat-card-title>
+    </mat-card-header>
+    
+    <mat-card-content>
+    
+      <mat-form-field class="example-full-width">
+        <mat-label>Key</mat-label>
+        <input matInput value="Enter your name..." />
+      </mat-form-field>
 
-    <mat-form-field class="example-full-width">
-      <mat-label>Name</mat-label>
-      <input matInput value="Enter your name..." />
-    </mat-form-field>
+      <mat-form-field class="example-full-width">
+        <mat-label>Value</mat-label>
+        <input matInput value="Enter your name..." />
+      </mat-form-field>
+        
+      <mat-slide-toggle labelPosition="before" formControlName="required">
+        Required: 
+      </mat-slide-toggle>
+      
+    </mat-card-content>
 
-    <mat-form-field class="example-full-width">
-      <mat-label>Name</mat-label>
-      <input matInput value="Enter your name..." />
-    </mat-form-field>
+    <mat-card-actions>
+      <button type="button" 
+        mat-raised-button color="primary" 
+        [mat-dialog-close]="data">
+        ok
+      </button>
+    <div class="spacer"></div>
 
-  </mat-card-content>
-  <mat-card-actions>
-    <button type="button" mat-raised-button color="primary" [mat-dialog-close]="data">
-      ok
-    </button>
-  <div class="spacer"></div>
+    </mat-card-actions>
 
-  </mat-card-actions>
-
-</mat-card>
+  </mat-card>
+</form>

@@ -1,0 +1,46 @@
+:host {
+  width: 100%;
+}
+
+mat-card {
+  width: 100% !important;
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+
+  .mat-mdc-card-content {
+    display: flex;
+    flex-direction: column;
+    //margin-left: 0px !important;
+    //margin-right: 0px !important;
+    //padding-left: 0px !important;
+    padding-bottom: 2em !important;
+
+    .content {
+      flex: 1 1 auto;
+      ;
+    }
+
+    .action {
+      display: flex;
+      flex-direction: row;
+      margin-left: 1em;
+    }
+
+    .spacer {
+      min-width: 1em;
+    }
+  }
+
+  mat-card-actions.mat-mdc-card-actions.mdc-card__actions {
+    justify-content: end;
+    padding-right: 1em;
+    padding-bottom: 1em;
+
+  }
+
+}
+
+mat-slide-toggle {
+  margin: 8px 0;
+  display: block;
+}

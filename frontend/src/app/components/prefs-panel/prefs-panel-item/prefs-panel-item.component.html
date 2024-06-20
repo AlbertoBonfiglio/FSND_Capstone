@@ -1,18 +1,22 @@
 <mat-list-item>
-<mat-card class="">
-  <mat-card-content>
-    <div class="content"> 
-      value here
-    </div>
-    
-    <div class="action">
-      <button type="button" mat-raised-button color="primary" 
-      (click)="onEdit()"  
-      >
-        edit
-      </button>
-    </div>
-  </mat-card-content>
+  <mat-card class="">
+    <mat-card-content>
+      <div class="content"> 
+        value here
+      </div>
+      
+      <div class="action">
+        <button type="button" [disabled]="value && value.required" mat-raised-button color="warn" (click)="onDelete()">
+          delete
+        </button>
+        <div class="spacer"></div>
+        <button type="button" mat-raised-button color="primary" 
+        (click)="onEdit()"  
+        >
+          edit
+        </button>
+      </div>
+    </mat-card-content>
 
-</mat-card>
+  </mat-card>
 </mat-list-item>

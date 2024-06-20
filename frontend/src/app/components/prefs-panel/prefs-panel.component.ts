@@ -11,7 +11,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { Preference } from '../../core/models/preferences.model';
 import { PrefsPanelDialogComponent} from './prefs-panel-dialog/prefs-panel-dialog.component';
-import { PrefsPanelItemComponent, Operation} from './prefs-panel-item/prefs-panel-item.component';
+import { PrefsPanelItemComponent, Operation, PrefAction} from './prefs-panel-item/prefs-panel-item.component';
 
 const dependencies = [
   CommonModule,
@@ -128,10 +128,13 @@ export class PrefsPanelComponent implements ControlValueAccessor {
 
   onItemClick($event: any){
     console.log($event); 
+    ($event?.ops === Operation.delete) 
+      ? this.deletePreference($event.pref!)
+      : this.showDialog($event?.pref);
   }
 
 
-  upsertPreference(preference: Preference|undefined): void {
+  private showDialog(preference: Preference|undefined): void {
     let data = preference ?? new Preference("", "");
     const dialogRef = this.dialog.open(PrefsPanelDialogComponent, {
       data: data,

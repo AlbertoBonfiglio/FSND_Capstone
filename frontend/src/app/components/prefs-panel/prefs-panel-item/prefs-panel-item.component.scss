@@ -22,7 +22,13 @@
         flex: 1 1 auto;;      
       }
       .action{
+        display: flex;
+        flex-direction: row;
         margin-left: 1em;
+      }
+      
+      .spacer {
+        min-width: 1em;
       }
     }
 
@@ -30,6 +36,7 @@
       justify-content: end;
       padding-right: 1em;
       padding-bottom: 1em;
+
     }
 
   }

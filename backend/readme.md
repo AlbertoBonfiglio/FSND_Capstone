@@ -3,6 +3,7 @@
 ## Table Of Content <!-- omit from toc -->
 
 - [Getting Started](#getting-started)
+  - [Live site](#live-site)
   - [Installing Dependencies](#installing-dependencies)
     - [Python 3.9](#python-39)
     - [Virtual Environment](#virtual-environment)
@@ -19,6 +20,10 @@
   - [Steps](#steps)
 
 ## Getting Started
+
+### Live site
+
+A sample of the API can be accessed on [Render](https://fsnd-capstone-711w.onrender.com)
 
 ### Installing Dependencies
 
