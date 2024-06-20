@@ -3,6 +3,7 @@
 ## Table Of Content <!-- omit from toc -->
 
 - [Getting Started](#getting-started)
+  - [Motivation](#motivation)
   - [Live site](#live-site)
   - [Installing Dependencies](#installing-dependencies)
     - [Python 3.9](#python-39)
@@ -20,6 +21,14 @@
   - [Steps](#steps)
 
 ## Getting Started
+
+### Motivation
+
+The Tankrover capstone arises from the need to collecting and tracking data from an array of small arduino robots roaming around reptile tanks.
+
+Each robot can be equipped with different sensors (e.g. light, humidity, UV lights, temperature, etc ). It receives it's configuration by querying a specific endpoint and submits the sensor data to another specific endpoint to be stored in a postgreSQL database. These endpoints are secured using a user generated API key. It is provided to the robots in the initial configuration along with the API endpoints URL.
+
+The API also takes care of data handling, and robot setup and configuration. These endpoints are secured using Auth0 tokens. All operations can be performed using direct API calls or via an Angular 17 app (in development).
 
 ### Live site
 
